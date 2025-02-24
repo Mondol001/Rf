@@ -1,246 +1,234 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ডেটা এন্ট্রি সাইট</title>
   <!-- Google Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
-    /* CSS Variables for Colors & Fonts */
-    :root {
-      --primary-color: #4e54c8;
-      --secondary-color: #8f94fb;
-      --accent-color: #ff6f61;
-      --bg-color: #f7f7f7;
-      --text-color: #333;
-      --modal-bg: #ffffff;
-      --transition-speed: 0.3s;
+    /* Reset */
+    * {
+      margin: 0; 
+      padding: 0; 
+      box-sizing: border-box;
     }
-
-    /* Global Reset & Base Styles */
-    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      font-family: 'Poppins', sans-serif;
-      background: var(--bg-color);
-      color: var(--text-color);
-      line-height: 1.6;
-      overflow-x: hidden;
+      font-family: 'Roboto', sans-serif; 
+      background: #f7f7f7; 
+      color: #333;
+      position: relative;
+      min-height: 100vh;
     }
-    a { text-decoration: none; color: inherit; }
 
     /* Header */
     header {
-      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      background: linear-gradient(135deg, #4e54c8, #8f94fb);
       padding: 20px;
       text-align: center;
       color: #fff;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      animation: slideDown 0.5s ease-out;
-    }
-    @keyframes slideDown {
-      from { transform: translateY(-100%); }
-      to { transform: translateY(0); }
     }
 
     /* Container */
     .container {
       max-width: 1200px;
-      margin: 20px auto;
-      padding: 0 15px;
+      margin: auto;
+      padding: 20px;
     }
 
     /* Top Controls */
     .top-controls {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 15px;
-      justify-content: center;
+      display: flex; 
+      gap: 10px; 
+      flex-wrap: wrap; 
+      align-items: center; 
       margin-bottom: 20px;
     }
-    .top-controls button {
-      background: var(--primary-color);
+
+    /* Buttons */
+    button {
+      background: #4e54c8;
       color: #fff;
       border: none;
-      padding: 12px 25px;
-      border-radius: 30px;
+      padding: 10px 20px;
       cursor: pointer;
-      font-weight: 500;
-      transition: background var(--transition-speed);
+      border-radius: 4px;
+      transition: background 0.3s ease;
     }
-    .top-controls button:hover {
-      background: var(--accent-color);
+    button:hover {
+      background: #3c44a0;
     }
 
     /* Filter Area */
     .filter-area {
       display: flex;
-      flex-wrap: wrap;
-      gap: 15px;
       align-items: center;
-      justify-content: center;
+      gap: 10px;
       margin-bottom: 20px;
+      flex-wrap: wrap;
     }
-    .filter-area label { font-weight: 500; }
+    .filter-area label {
+      font-weight: 500;
+      margin-bottom: 5px;
+      display: block;
+    }
     .filter-area input,
     .filter-area select {
-      padding: 8px 12px;
       border: 1px solid #ccc;
       border-radius: 4px;
-      outline: none;
-      transition: border-color var(--transition-speed);
+      padding: 6px 10px;
     }
-    .filter-area input:focus,
-    .filter-area select:focus { border-color: var(--primary-color); }
 
     /* Advanced Filter Collapsible */
     .advanced-filter-toggle {
-      background: var(--primary-color);
-      padding: 10px 18px;
+      background: #3c44a0;
+      padding: 8px 14px;
       border-radius: 4px;
       color: #fff;
       cursor: pointer;
-      transition: background var(--transition-speed);
     }
-    .advanced-filter-toggle:hover { background: var(--accent-color); }
     .advanced-filter {
       background: #fff;
-      padding: 20px;
+      padding: 15px;
       border-radius: 8px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
       margin-top: 10px;
-      display: none;
-      flex-wrap: wrap;
-      gap: 15px;
-      animation: fadeIn 0.4s ease;
-    }
-    .advanced-filter.active { display: flex; }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.95); }
-      to { opacity: 1; transform: scale(1); }
-    }
-
-    /* Table Styles */
-    .table-container {
-      background: #fff;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
       margin-bottom: 20px;
-      animation: fadeIn 0.5s ease;
+      display: none; /* Collapsed by default */
+      flex-wrap: wrap;
+      gap: 10px;
     }
-    table {
-      width: 100%;
-      border-collapse: collapse;
+    .advanced-filter.active {
+      display: flex; /* Show when active */
     }
-    table thead tr {
-      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-      color: #fff;
+    .advanced-filter > div {
+      display: flex;
+      flex-direction: column;
     }
-    table th,
-    table td {
-      padding: 14px 20px;
-      border: 1px solid #ddd;
-      text-align: left;
-      font-size: 0.9rem;
-    }
-    table tbody tr:nth-child(even) { background: #f2f2f2; }
-    table tbody tr:hover { background: #e9e9ff; }
-    table img { border-radius: 4px; cursor: pointer; transition: transform var(--transition-speed); }
-    table img:hover { transform: scale(1.05); }
 
-    /* Modals */
+    /* Modal Styles (Data Entry) */
     .modal {
       position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
+      top: 0; 
+      left: 0;
+      width: 100%; 
+      height: 100%;
       background: rgba(0,0,0,0.6);
       display: flex;
       justify-content: center;
       align-items: center;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.4s ease;
+      transition: opacity 0.3s ease;
       z-index: 1000;
     }
-    .modal.show { opacity: 1; pointer-events: auto; }
+    .modal.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
     .modal-content {
-      background: var(--modal-bg);
+      background: #fff;
       width: 90%;
       max-width: 500px;
-      border-radius: 10px;
-      padding: 25px;
+      border-radius: 8px;
+      padding: 20px;
       position: relative;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-      animation: popIn 0.5s ease;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
-    /* Make Modify Modal scrollable */
-    #modifyModal .modal-content {
-      max-height: 80vh;
-      overflow-y: auto;
+    .modal-content h2 {
+      margin-bottom: 15px;
+      text-align: center;
     }
-    @keyframes popIn {
-      from { transform: scale(0.7); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
-    }
-    .modal-content h2 { margin-bottom: 20px; text-align: center; color: var(--primary-color); }
     .modal-content .close {
       position: absolute;
-      top: 15px;
-      right: 15px;
-      font-size: 28px;
+      top: 10px;
+      right: 10px;
+      font-size: 24px;
       cursor: pointer;
       color: #888;
-      transition: color 0.3s;
     }
-    .modal-content .close:hover { color: var(--accent-color); }
+    .modal-content .close:hover {
+      color: #333;
+    }
+    /* Modal Loading Overlay (inside modal-content) */
     .modal-loading {
       position: absolute;
       top: 0; left: 0;
-      width: 100%; height: 100%;
+      width: 100%;
+      height: 100%;
       background: rgba(255,255,255,0.8);
       display: flex;
       justify-content: center;
       align-items: center;
       z-index: 10;
-      border-radius: 10px;
     }
 
-    /* Form Styles */
-    form label { margin-top: 10px; display: block; font-weight: 500; }
-    form input,
-    form textarea {
+    /* Form Inputs */
+    form label {
+      margin-top: 10px;
+      display: block;
+      font-weight: 500;
+    }
+    form input, form textarea {
       width: 100%;
-      padding: 10px;
       margin-top: 5px;
-      margin-bottom: 15px;
+      margin-bottom: 10px;
+      padding: 8px;
       border: 1px solid #ccc;
       border-radius: 4px;
-      outline: none;
-      transition: border-color var(--transition-speed);
     }
-    form input:focus,
-    form textarea:focus { border-color: var(--primary-color); }
-    form button {
-      background: var(--primary-color);
-      color: #fff;
-      border: none;
-      padding: 12px;
-      border-radius: 30px;
-      cursor: pointer;
-      font-size: 1rem;
-      transition: background var(--transition-speed);
-      width: 100%;
-    }
-    form button:hover { background: var(--accent-color); }
 
-    /* Photo Modal */
+    /* Table Styles */
+    .table-container {
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+    table {
+  width: 100%;
+  border-collapse: collapse;
+}
+table thead tr {
+  background: linear-gradient(135deg, #4e54c8, #8f94fb);
+  color: #fff;
+}
+table th, table td {
+  padding: 12px 15px;
+  border: 1px solid black; /* সীমানা কালো */
+  text-align: left;
+  vertical-align: middle;
+}
+table tbody tr:nth-child(even) {
+  background: #f9f9f9;
+}
+table tbody tr:hover {
+  background: #f1f1f1;
+}
+
+    table img {
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    /* Responsive: Horizontal Scroll on small screens */
+    @media (max-width: 768px) {
+      .table-container {
+        overflow-x: auto;
+      }
+      table {
+        min-width: 800px; 
+      }
+    }
+
+    /* Modal (Photo Preview) */
     .photo-modal {
       position: fixed;
       top: 0; left: 0;
       width: 100%; height: 100%;
-      background: rgba(0,0,0,0.8);
+      background: rgba(0,0,0,0.7);
       display: flex;
       justify-content: center;
       align-items: center;
@@ -249,7 +237,10 @@
       transition: opacity 0.3s ease;
       z-index: 2000;
     }
-    .photo-modal.show { opacity: 1; pointer-events: auto; }
+    .photo-modal.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
     .photo-modal-content {
       position: relative;
       max-width: 90%;
@@ -257,82 +248,89 @@
     }
     .photo-modal-content img {
       width: 100%;
-      border-radius: 8px;
+      height: auto;
+      border-radius: 4px;
       display: block;
     }
     .photo-modal .close-photo {
       position: absolute;
-      top: -35px;
+      top: -40px;
       right: 0;
       color: #fff;
-      font-size: 32px;
+      font-size: 30px;
       cursor: pointer;
+    }
+    /* Photo Spinner (overlay on image preview) */
+    #photoSpinner {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      display: none;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 10px;
+      background: #333;
+      color: #fff;
+      margin-top: 20px;
     }
 
     /* Toast Message */
     .toast {
       position: fixed;
-      top: 20px;
-      right: 20px;
-      background: var(--primary-color);
+      top: 10px;
+      right: 10px;
+      background: #4e54c8;
       color: #fff;
-      padding: 12px 20px;
+      padding: 10px 15px;
       border-radius: 4px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.2);
       opacity: 0;
       transform: translateY(-20px);
-      transition: opacity 0.4s, transform 0.4s;
+      transition: opacity 0.3s, transform 0.3s;
       z-index: 3000;
       pointer-events: none;
     }
     .toast.show {
       opacity: 1;
       transform: translateY(0);
+      pointer-events: auto;
     }
-    .toast.error { background: #d9534f; }
+    .toast.error {
+      background: #d9534f;
+    }
 
     /* Global Loading Overlay */
     .loading-overlay {
       position: fixed;
       top: 0; left: 0;
       width: 100%; height: 100%;
-      background: rgba(255,255,255,0.8);
+      background: rgba(255,255,255,0.7);
       display: flex;
       justify-content: center;
       align-items: center;
       z-index: 999;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.3s ease;
+      transition: opacity 0.2s ease;
     }
-    .loading-overlay.show { opacity: 1; pointer-events: auto; }
+    .loading-overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
     .spinner {
       width: 40px;
       height: 40px;
       border: 4px solid #ccc;
-      border-top: 4px solid var(--primary-color);
+      border-top: 4px solid #4e54c8;
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
     }
-    @keyframes spin { 100% { transform: rotate(360deg); } }
-
-    /* Responsive Adjustments */
-    @media (max-width: 768px) {
-      .top-controls { flex-direction: column; }
-      table th, table td { padding: 10px 15px; font-size: 0.85rem; }
-      .modal-content { width: 95%; }
-    }
-
-    /* Print Styles: Only show table area */
-    @media print {
-      body * { visibility: hidden; }
-      .table-container, .table-container * { visibility: visible; }
-      .table-container {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-      }
+    @keyframes spin {
+      100% { transform: rotate(360deg); }
     }
   </style>
 </head>
@@ -341,20 +339,19 @@
     <h1>ডেটা এন্ট্রি সাইট</h1>
   </header>
 
-  <!-- Global Loading Overlay -->
+  <!-- Global Loading Overlay (for data load, delete, etc.) -->
   <div id="loadingOverlay" class="loading-overlay">
     <div class="spinner"></div>
   </div>
-
+  
   <div class="container">
     <!-- Top Controls -->
     <div class="top-controls">
       <button id="openModalBtn">ডেটা এন্ট্রি করুন</button>
-      <button id="modifyBtn">মডিফাই</button>
       <button id="printBtn">প্রিন্ট</button>
     </div>
 
-    <!-- Filter Area -->
+    <!-- Filter Area (Order No always visible) -->
     <div class="filter-area">
       <div>
         <label for="filterOrderNo">অর্ডার নং</label>
@@ -365,7 +362,7 @@
       </div>
     </div>
 
-    <!-- Advanced Filter Collapsible -->
+    <!-- Advanced Filter Collapsible (Date, Month, Year) -->
     <div class="advanced-filter" id="advancedFilterSection">
       <div>
         <label for="filterDate">তারিখ</label>
@@ -394,8 +391,8 @@
         <input type="number" id="filterYear" placeholder="বছর (যেমন: 2025)">
       </div>
     </div>
-
-    <!-- Main Data Table (অ্যাকশন কলাম নেই) -->
+    
+    <!-- Data Table -->
     <div class="table-container">
       <table id="dataTable">
         <thead>
@@ -406,6 +403,8 @@
             <th>সেড নং</th>
             <th>কালার নাম</th>
             <th>রেমার্কস</th>
+            <th>ফটো</th>
+            <th>অ্যাকশন</th>
           </tr>
         </thead>
         <tbody>
@@ -414,40 +413,51 @@
       </table>
     </div>
   </div>
-
-  <!-- Data Entry Modal -->
+  
+  <!-- Modal (Data Entry) -->
   <div id="dataModal" class="modal">
     <div class="modal-content">
       <span class="close">&times;</span>
+      <!-- Modal Loading Overlay (inside modal-content) -->
       <div id="modalLoading" class="modal-loading" style="display:none;">
         <div class="spinner"></div>
       </div>
       <h2 id="modalTitle">ডেটা এন্ট্রি ফর্ম</h2>
       <form id="entryForm">
+        <!-- হিডেন ফিল্ড, এডিটের সময় আইডি স্টোর হবে -->
         <input type="hidden" id="entryId" name="entryId" value="">
+
         <label for="date">তারিখ:</label>
         <input type="date" id="date" name="date" required>
+        
         <label for="orderNo">অর্ডার নং:</label>
         <input type="text" id="orderNo" name="orderNo" required>
+        
         <label for="partyName">পার্টি নাম:</label>
         <input type="text" id="partyName" name="partyName" required>
+        
         <label for="seedNo">সেড নং:</label>
         <input type="text" id="seedNo" name="seedNo" required>
+        
         <label for="colorName">কালার নাম:</label>
         <input type="text" id="colorName" name="colorName" required>
+        
         <label for="remarks">রেমার্কস:</label>
         <textarea id="remarks" name="remarks"></textarea>
+        
         <label for="photo">ফটো:</label>
         <input type="file" id="photo" name="photo" accept="image/*">
+        
         <button type="submit" id="submitBtn">সেভ করুন</button>
       </form>
     </div>
   </div>
-
-  <!-- Photo Preview Modal -->
+  
+  <!-- Modal (Photo Preview) -->
   <div id="photoModal" class="photo-modal">
     <div class="photo-modal-content">
       <span id="closePhotoModal" class="close-photo">&times;</span>
+      <!-- Photo Spinner -->
       <div id="photoSpinner">
         <div class="spinner"></div>
       </div>
@@ -455,37 +465,10 @@
     </div>
   </div>
 
-  <!-- Modify Modal: অর্ডার সার্চ ও এডিট/ডিলিট (Scrollable) -->
-  <div id="modifyModal" class="modal">
-    <div class="modal-content">
-      <span class="close" id="closeModifyModal">&times;</span>
-      <h2>মডিফাই</h2>
-      <input type="text" id="modifyOrderNo" placeholder="অর্ডার নং দিয়ে সার্চ করুন" style="width:100%; padding:10px; margin-bottom:15px; border:1px solid #ccc; border-radius:4px;">
-      <div class="table-container">
-        <table id="modifyTable">
-          <thead>
-            <tr>
-              <th>তারিখ</th>
-              <th>অর্ডার নং</th>
-              <th>পার্টি নাম</th>
-              <th>সেড নং</th>
-              <th>কালার নাম</th>
-              <th>রেমার্কস</th>
-              <th>অ্যাকশন</th>
-            </tr>
-          </thead>
-          <tbody>
-            <!-- সার্চকৃত অর্ডারের ডেটা এখানে লোড হবে -->
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
   <footer>
     <p>ডেটা এন্ট্রি সাইট © 2025</p>
   </footer>
-
+  
   <!-- Supabase JS SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   <script>
@@ -497,22 +480,24 @@
     //==== Elements & Variables ====
     const modal = document.getElementById("dataModal");
     const openModalBtn = document.getElementById("openModalBtn");
-    const closeModalBtn = document.querySelector("#dataModal .close");
+    const closeModalBtn = document.querySelector(".modal-content .close");
     const entryForm = document.getElementById("entryForm");
     const modalTitle = document.getElementById("modalTitle");
     const submitBtn = document.getElementById("submitBtn");
     const entryIdField = document.getElementById("entryId");
 
     const loadingOverlay = document.getElementById("loadingOverlay");
+
+    //==== Modal Loading (inside entry modal) ====
     const modalLoading = document.getElementById("modalLoading");
 
-    //==== Photo Modal Elements ====
+    //==== Photo Modal ====
     const photoModal = document.getElementById("photoModal");
     const closePhotoModal = document.getElementById("closePhotoModal");
     const modalImg = document.getElementById("modalImg");
     const photoSpinner = document.getElementById("photoSpinner");
 
-    //==== Filters for Main Table ====
+    //==== Filters ====
     const filterDate = document.getElementById("filterDate");
     const filterMonth = document.getElementById("filterMonth");
     const filterYear = document.getElementById("filterYear");
@@ -522,43 +507,66 @@
     const toggleFilterBtn = document.getElementById("toggleFilterBtn");
     const advancedFilterSection = document.getElementById("advancedFilterSection");
     let isFilterOpen = false;
+
     toggleFilterBtn.addEventListener("click", () => {
       isFilterOpen = !isFilterOpen;
       advancedFilterSection.classList.toggle("active", isFilterOpen);
     });
 
-    //==== Data Entry Modal Handling ====
+    //==== Modal Handling (Data Entry) ====
     openModalBtn.addEventListener("click", () => {
       setFormMode("new");
       modal.classList.add("show");
     });
-    closeModalBtn.addEventListener("click", () => { modal.classList.remove("show"); });
-    window.addEventListener("click", (e) => { if(e.target === modal) modal.classList.remove("show"); });
+    closeModalBtn.addEventListener("click", () => {
+      modal.classList.remove("show");
+    });
+    window.addEventListener("click", (e) => {
+      if (e.target === modal) {
+        modal.classList.remove("show");
+      }
+    });
 
     //==== Print Functionality ====
-    document.getElementById("printBtn").addEventListener("click", () => { window.print(); });
+    document.getElementById("printBtn").addEventListener("click", () => {
+      window.print();
+    });
 
     //==== Toast Message Function ====
     function showToast(message, type="success") {
       const toast = document.createElement("div");
       toast.classList.add("toast");
-      if(type === "error") { toast.classList.add("error"); }
+      if(type === "error") {
+        toast.classList.add("error");
+      }
       toast.innerText = message;
       document.body.appendChild(toast);
-      setTimeout(() => { toast.classList.add("show"); }, 100);
+      setTimeout(() => {
+        toast.classList.add("show");
+      }, 100);
       setTimeout(() => {
         toast.classList.remove("show");
-        setTimeout(() => { toast.remove(); }, 300);
+        setTimeout(() => {
+          toast.remove();
+        }, 300);
       }, 3000);
     }
 
-    //==== Global Loading Overlay Functions ====
-    function showLoading() { loadingOverlay.classList.add("show"); }
-    function hideLoading() { loadingOverlay.classList.remove("show"); }
+    //==== Global Loading Overlay Functions (for loadData, delete, etc.) ====
+    function showLoading() {
+      loadingOverlay.classList.add("show");
+    }
+    function hideLoading() {
+      loadingOverlay.classList.remove("show");
+    }
 
-    //==== Modal Loading Functions ====
-    function showModalLoading() { modalLoading.style.display = "flex"; }
-    function hideModalLoading() { modalLoading.style.display = "none"; }
+    //==== Modal Loading Functions (for entry modal submission) ====
+    function showModalLoading() {
+      modalLoading.style.display = "flex";
+    }
+    function hideModalLoading() {
+      modalLoading.style.display = "none";
+    }
 
     //==== Debounce Function ====
     function debounce(func, delay) {
@@ -592,7 +600,7 @@
     //==== Form Submission (Insert or Update) ====
     entryForm.addEventListener("submit", async (e) => {
       e.preventDefault();
-      showModalLoading();
+      showModalLoading(); // Show loading inside modal
       const idVal = entryIdField.value;
       const dateVal = document.getElementById("date").value;
       const orderNoVal = document.getElementById("orderNo").value;
@@ -605,24 +613,41 @@
       let photoUrl = null;
       if (photoFile) {
         photoUrl = await uploadImage(photoFile);
-        if (!photoUrl) { hideModalLoading(); return; }
+        if (!photoUrl) {
+          hideModalLoading();
+          return;
+        }
       }
 
       let error;
       if(!idVal) {
+        // Insert New Entry
         ({ error } = await supabaseClient
           .from('data_entries')
-          .insert([{ 
-            date: dateVal, order_no: orderNoVal, party_name: partyNameVal,
-            seed_no: seedNoVal, color_name: colorNameVal, remarks: remarksVal,
-            photo_url: photoUrl 
-          }]));
+          .insert([
+            {
+              date: dateVal,
+              order_no: orderNoVal,
+              party_name: partyNameVal,
+              seed_no: seedNoVal,
+              color_name: colorNameVal,
+              remarks: remarksVal,
+              photo_url: photoUrl
+            }
+          ]));
       } else {
-        let updateData = { 
-          date: dateVal, order_no: orderNoVal, party_name: partyNameVal,
-          seed_no: seedNoVal, color_name: colorNameVal, remarks: remarksVal 
+        // Update Existing Entry
+        let updateData = {
+          date: dateVal,
+          order_no: orderNoVal,
+          party_name: partyNameVal,
+          seed_no: seedNoVal,
+          color_name: colorNameVal,
+          remarks: remarksVal
         };
-        if(photoUrl) { updateData.photo_url = photoUrl; }
+        if(photoUrl) {
+          updateData.photo_url = photoUrl;
+        }
         ({ error } = await supabaseClient
           .from('data_entries')
           .update(updateData)
@@ -637,7 +662,6 @@
         modal.classList.remove("show");
         entryForm.reset();
         loadData();
-        loadModifyData(); // Refresh modify table if open
       }
     });
 
@@ -676,8 +700,6 @@
       }
       setFormMode("edit", data);
       modal.classList.add("show");
-      // Close modify modal if open
-      modifyModal.classList.remove("show");
     }
 
     async function deleteEntry(id) {
@@ -694,11 +716,10 @@
       } else {
         showToast("সফলভাবে ডিলিট হয়েছে");
         loadData();
-        loadModifyData(); // Refresh modify table
       }
     }
     
-    //==== Load Data for Main Table (অ্যাকশন কলাম নেই) ====
+    //==== Load Data with Filters (accepts optional skipLoading flag) ====
     async function loadData(skipLoading = false) {
       if(!skipLoading) showLoading();
       let query = supabaseClient
@@ -709,110 +730,91 @@
       const monthVal = filterMonth.value;
       const yearVal = filterYear.value;
       const orderNoVal = filterOrderNo.value.trim();
-      if (dateVal) { query = query.eq('date', dateVal); }
-      else {
-        if (yearVal) { query = query.ilike('date', `${yearVal}-%`); }
-        if (monthVal) { query = query.ilike('date', `%-${monthVal}-%`); }
+      if (dateVal) {
+        query = query.eq('date', dateVal);
+      } else {
+        if (yearVal) {
+          query = query.ilike('date', `${yearVal}-%`);
+        }
+        if (monthVal) {
+          query = query.ilike('date', `%-${monthVal}-%`);
+        }
       }
-      if (orderNoVal) { query = query.ilike('order_no', `%${orderNoVal}%`); }
+      if (orderNoVal) {
+        query = query.ilike('order_no', `%${orderNoVal}%`);
+      }
       const { data, error } = await query;
       if(!skipLoading) hideLoading();
-      if (error) { showToast("ডেটা লোডে সমস্যা: " + error.message, "error"); return; }
+      if (error) {
+        showToast("ডেটা লোডে সমস্যা: " + error.message, "error");
+        return;
+      }
       const tbody = document.getElementById("dataTable").querySelector("tbody");
       tbody.innerHTML = "";
       data.forEach(entry => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${entry.date || '-'}</td>
-          <td>${entry.order_no || '-'}</td>
-          <td>${entry.party_name || '-'}</td>
-          <td>${entry.seed_no || '-'}</td>
-          <td>${entry.color_name || '-'}</td>
-          <td>${entry.remarks || '-'}</td>
-        `;
-        tbody.appendChild(tr);
-      });
+  const tr = document.createElement("tr");
+  tr.innerHTML = `
+    <td>${entry.date || '-'}</td>
+    <td>${entry.order_no || '-'}</td>
+    <td>${entry.party_name || '-'}</td>
+    <td>${entry.seed_no || '-'}</td>
+    <td>${entry.color_name || '-'}</td>
+    <td>${entry.remarks || '-'}</td>
+    <td>
+      ${
+        entry.photo_url 
+          ? `<img src="${entry.photo_url}" width="50" alt="ফটো" class="preview-img">` 
+          : '-'
+      }
+    </td>
+    <td>
+      <button onclick="editEntry(${entry.id})">Edit</button>
+      <button style="background:#d9534f" onclick="deleteEntry(${entry.id})">Delete</button>
+    </td>
+  `;
+  tbody.appendChild(tr);
+});
+
+      attachImagePreviewEvents();
     }
     
-    //==== Modify Modal Handling ====
-    const modifyBtn = document.getElementById("modifyBtn");
-    const modifyModal = document.getElementById("modifyModal");
-    const closeModifyModal = document.getElementById("closeModifyModal");
-    const modifyOrderNo = document.getElementById("modifyOrderNo");
-    const modifyTableBody = document.getElementById("modifyTable").querySelector("tbody");
-
-    modifyBtn.addEventListener("click", () => {
-      modifyModal.classList.add("show");
-      modifyOrderNo.value = "";
-      // Clear table before search input is provided
-      modifyTableBody.innerHTML = "";
+    //==== Image Preview Modal ====
+    closePhotoModal.addEventListener("click", () => {
+      photoModal.classList.remove("show");
     });
-    closeModifyModal.addEventListener("click", () => { modifyModal.classList.remove("show"); });
-    window.addEventListener("click", (e) => { if(e.target === modifyModal) modifyModal.classList.remove("show"); });
-
-    //==== Load Data for Modify Modal (Order Search) ====
-    async function loadModifyData() {
-      const orderNoSearch = modifyOrderNo.value.trim();
-      // If search input is empty, clear table
-      if (!orderNoSearch) {
-        modifyTableBody.innerHTML = "";
-        return;
+    window.addEventListener("click", (e) => {
+      if (e.target === photoModal) {
+        photoModal.classList.remove("show");
       }
-      let query = supabaseClient
-        .from('data_entries')
-        .select('*')
-        .order('id', { ascending: false })
-        .ilike('order_no', `%${orderNoSearch}%`);
-      const { data, error } = await query;
-      if(error) {
-        showToast("মডিফাই ডেটা লোডে সমস্যা: " + error.message, "error");
-        return;
-      }
-      modifyTableBody.innerHTML = "";
-      data.forEach(entry => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${entry.date || '-'}</td>
-          <td>${entry.order_no || '-'}</td>
-          <td>${entry.party_name || '-'}</td>
-          <td>${entry.seed_no || '-'}</td>
-          <td>${entry.color_name || '-'}</td>
-          <td>${entry.remarks || '-'}</td>
-          <td>
-            <button onclick="editEntry(${entry.id})">Edit</button>
-            <button style="background:#d9534f" onclick="deleteEntry(${entry.id})">Delete</button>
-          </td>
-        `;
-        modifyTableBody.appendChild(tr);
-      });
-    }
-
-    // Debounce Modify Search Input
-    const debouncedLoadModifyData = debounce(() => { loadModifyData(); }, 300);
-    modifyOrderNo.addEventListener("input", debouncedLoadModifyData);
-
-    //==== Photo Modal Handling ====
-    closePhotoModal.addEventListener("click", () => { photoModal.classList.remove("show"); });
-    window.addEventListener("click", (e) => { if(e.target === photoModal) photoModal.classList.remove("show"); });
+    });
     function attachImagePreviewEvents() {
       const images = document.querySelectorAll(".preview-img");
       images.forEach(img => {
         img.addEventListener("click", (e) => {
+          // Show photo spinner until image loads
           photoSpinner.style.display = "block";
           modalImg.src = e.target.src;
-          modalImg.onload = function() { photoSpinner.style.display = "none"; };
+          modalImg.onload = function() {
+            photoSpinner.style.display = "none";
+          };
           photoModal.classList.add("show");
         });
       });
     }
     
-    //==== Filter Events for Main Table ====
+    //==== Debounce the Order No Filter ====
+    const debouncedLoadData = debounce((skip) => {
+      loadData(skip);
+    }, 300);
+    
+    //==== Filter Events ====
     filterDate.addEventListener("change", () => { loadData(); });
     filterMonth.addEventListener("change", () => { loadData(); });
     filterYear.addEventListener("input", () => { loadData(); });
-    filterOrderNo.addEventListener("input", debounce(() => { loadData(true); }, 300));
+    // For order no filter, call debounced version and skip loading overlay
+    filterOrderNo.addEventListener("input", () => { debouncedLoadData(true); });
 
-    //==== Load Data on Page Load ====
+    //==== পেজ লোড হলে ডেটা লোড ====
     window.addEventListener("load", () => { loadData(); });
   </script>
 </body>
