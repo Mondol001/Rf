@@ -188,25 +188,26 @@
       overflow: hidden;
     }
     table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-    table thead tr {
-      background: linear-gradient(135deg, #4e54c8, #8f94fb);
-      color: #fff;
-    }
-    table th, table td {
-      padding: 12px 15px;
-      border-bottom: 1px solid #ddd;
-      text-align: left;
-      vertical-align: middle;
-    }
-    table tbody tr:nth-child(even) {
-      background: #f9f9f9;
-    }
-    table tbody tr:hover {
-      background: #f1f1f1;
-    }
+  width: 100%;
+  border-collapse: collapse;
+}
+table thead tr {
+  background: linear-gradient(135deg, #4e54c8, #8f94fb);
+  color: #fff;
+}
+table th, table td {
+  padding: 12px 15px;
+  border: 1px solid black; /* সীমানা কালো */
+  text-align: left;
+  vertical-align: middle;
+}
+table tbody tr:nth-child(even) {
+  background: #f9f9f9;
+}
+table tbody tr:hover {
+  background: #f1f1f1;
+}
+
     table img {
       border-radius: 4px;
       cursor: pointer;
@@ -751,28 +752,29 @@
       const tbody = document.getElementById("dataTable").querySelector("tbody");
       tbody.innerHTML = "";
       data.forEach(entry => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${entry.date || ""}</td>
-          <td>${entry.order_no || ""}</td>
-          <td>${entry.party_name || ""}</td>
-          <td>${entry.seed_no || ""}</td>
-          <td>${entry.color_name || ""}</td>
-          <td>${entry.remarks || ""}</td>
-          <td>
-            ${
-              entry.photo_url 
-                ? `<img src="${entry.photo_url}" width="50" alt="ফটো" class="preview-img">` 
-                : ''
-            }
-          </td>
-          <td>
-            <button onclick="editEntry(${entry.id})">Edit</button>
-            <button style="background:#d9534f" onclick="deleteEntry(${entry.id})">Delete</button>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
+  const tr = document.createElement("tr");
+  tr.innerHTML = `
+    <td>${entry.date || '-'}</td>
+    <td>${entry.order_no || '-'}</td>
+    <td>${entry.party_name || '-'}</td>
+    <td>${entry.seed_no || '-'}</td>
+    <td>${entry.color_name || '-'}</td>
+    <td>${entry.remarks || '-'}</td>
+    <td>
+      ${
+        entry.photo_url 
+          ? `<img src="${entry.photo_url}" width="50" alt="ফটো" class="preview-img">` 
+          : '-'
+      }
+    </td>
+    <td>
+      <button onclick="editEntry(${entry.id})">Edit</button>
+      <button style="background:#d9534f" onclick="deleteEntry(${entry.id})">Delete</button>
+    </td>
+  `;
+  tbody.appendChild(tr);
+});
+
       attachImagePreviewEvents();
     }
     
