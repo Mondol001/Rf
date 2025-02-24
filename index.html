@@ -199,14 +199,15 @@
         <input type="text" id="colorName" name="colorName" required>
         <label for="remarks">রেমার্কস:</label>
         <textarea id="remarks" name="remarks"></textarea>
-        <label for="photo">ফটো:</label>
-        <input type="file" id="photo" name="photo" accept="image/*">
+        <!-- File input with camera capture option added -->
+        <label for="photo">ফটো (ফাইল নির্বাচন বা ক্যামেরা):</label>
+        <input type="file" id="photo" name="photo" accept="image/*" capture="environment">
         <button type="submit" id="submitBtn">সেভ করুন</button>
       </form>
     </div>
   </div>
   
-  <!-- Photo Preview Modal with Zoom & Pan -->
+  <!-- Photo Preview Modal with Zoom, Pan & Limited Zoom-Out -->
   <div id="photoModal" class="photo-modal">
     <div class="photo-modal-content">
       <span id="closePhotoModal" class="close-photo">&times;</span>
@@ -247,7 +248,7 @@
   <script>
     // Supabase Configuration
     const SUPABASE_URL = "https://rabjyhlinntzbnbqbmad.supabase.co"; 
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJhYmp5aGxpbm50emJuYnFibWFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDAzNzg2NDAsImV4cCI6MjA1NTk1NDY0MH0.19NyAvpxbG5czIyLmPiRQ26X3R_Wo_cqTurGIUf3hmQ";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJhYmp5aGxpbm50emJuYnFibWFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDAzNzg2NDAsImV4cCI6MjA1NTk1NDY0MH0.19NyAvpxbG5czIyLmPiRQ26X3R_Wo_cqTurGIUf3hmQ"; 
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     
     // Elements & Variables
@@ -429,219 +430,4 @@
       const dateVal = filterDate.value;
       const monthVal = filterMonth.value;
       const yearVal = filterYear.value;
-      const orderNoVal = filterOrderNo.value.trim();
-      if (dateVal) {
-        query = query.eq('date', dateVal);
-      } else {
-        if (yearVal) { query = query.ilike('date', `${yearVal}-%`); }
-        if (monthVal) { query = query.ilike('date', `%-${monthVal}-%`); }
-      }
-      if (orderNoVal) { query = query.ilike('order_no', `%${orderNoVal}%`); }
-      const { data, error } = await query;
-      if(!skipLoading) hideLoading();
-      if (error) { showToast("ডেটা লোডে সমস্যা: " + error.message, "error"); return; }
-      const tbody = document.getElementById("dataTable").querySelector("tbody");
-      tbody.innerHTML = "";
-      data.forEach(entry => {
-        let formattedDate = entry.date ? formatDate(entry.date) : '-';
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${formattedDate}</td>
-          <td>${entry.order_no || '-'}</td>
-          <td>${entry.party_name || '-'}</td>
-          <td>${entry.seed_no || '-'}</td>
-          <td>${entry.color_name || '-'}</td>
-          <td>${entry.remarks || '-'}</td>
-          <td>${ entry.photo_url ? `<img src="${entry.photo_url}" width="50" alt="ফটো" class="preview-img">` : '-' }</td>
-        `;
-        tbody.appendChild(tr);
-      });
-      attachImagePreviewEvents();
-    }
-    
-    // Photo Preview Modal: Zoom, Pan & Limit Zoom-Out to Original Size
-    let currentScale = 1;
-    let translateX = 0, translateY = 0;
-    let isDragging = false, dragStartX = 0, dragStartY = 0;
-    
-    function resetTransform() {
-      currentScale = 1;
-      translateX = 0;
-      translateY = 0;
-      modalImg.style.transform = "translate(0px, 0px) scale(1)";
-    }
-    
-    function attachImagePreviewEvents() {
-      const images = document.querySelectorAll(".preview-img");
-      images.forEach(img => {
-        img.addEventListener("click", (e) => {
-          photoSpinner.style.display = "block";
-          modalImg.src = e.target.src;
-          resetTransform();
-          modalImg.onload = () => { photoSpinner.style.display = "none"; };
-          photoModal.classList.add("show");
-        });
-      });
-    }
-    
-    // PC: Keydown for zoom (Ctrl +/+ and Ctrl -)
-    window.addEventListener("keydown", function(e) {
-      if(photoModal.classList.contains("show") && e.ctrlKey){
-        if(e.key === '+' || e.key === '='){
-          currentScale += 0.1;
-          modalImg.style.transform = `translate(${translateX}px, ${translateY}px) scale(${currentScale})`;
-          e.preventDefault();
-        } else if(e.key === '-'){
-          // Limit zoom-out: minimum scale is 1 (original size)
-          currentScale = Math.max(1, currentScale - 0.1);
-          modalImg.style.transform = `translate(${translateX}px, ${translateY}px) scale(${currentScale})`;
-          e.preventDefault();
-        }
-      }
-    });
-    
-    // PC: Mouse drag for panning
-    modalImg.addEventListener("mousedown", function(e) {
-      isDragging = true;
-      dragStartX = e.clientX - translateX;
-      dragStartY = e.clientY - translateY;
-    });
-    window.addEventListener("mousemove", function(e) {
-      if(isDragging) {
-        translateX = e.clientX - dragStartX;
-        translateY = e.clientY - dragStartY;
-        modalImg.style.transform = `translate(${translateX}px, ${translateY}px) scale(${currentScale})`;
-      }
-    });
-    window.addEventListener("mouseup", function(e) {
-      isDragging = false;
-    });
-    
-    // Mobile: Touch events for zoom (pinch) and pan (one-finger drag)
-    let initialDistance = null, initialScale = 1;
-    modalImg.addEventListener("touchstart", function(e) {
-      if(e.touches.length === 2){
-        initialDistance = Math.hypot(
-          e.touches[0].pageX - e.touches[1].pageX, 
-          e.touches[0].pageY - e.touches[1].pageY
-        );
-        initialScale = currentScale;
-      } else if(e.touches.length === 1){
-        isDragging = true;
-        dragStartX = e.touches[0].clientX - translateX;
-        dragStartY = e.touches[0].clientY - translateY;
-      }
-    });
-    modalImg.addEventListener("touchmove", function(e) {
-      if(e.touches.length === 2 && initialDistance){
-        let newDistance = Math.hypot(
-          e.touches[0].pageX - e.touches[1].pageX, 
-          e.touches[0].pageY - e.touches[1].pageY
-        );
-        // Limit zoom-out: minimum scale is 1
-        currentScale = Math.max(1, initialScale * (newDistance / initialDistance));
-        modalImg.style.transform = `translate(${translateX}px, ${translateY}px) scale(${currentScale})`;
-        e.preventDefault();
-      } else if(e.touches.length === 1 && isDragging){
-        translateX = e.touches[0].clientX - dragStartX;
-        translateY = e.touches[0].clientY - dragStartY;
-        modalImg.style.transform = `translate(${translateX}px, ${translateY}px) scale(${currentScale})`;
-        e.preventDefault();
-      }
-    });
-    modalImg.addEventListener("touchend", function(e) {
-      if(e.touches.length < 2){
-        initialDistance = null;
-      }
-      if(e.touches.length === 0){
-        isDragging = false;
-      }
-    });
-    
-    // Close Photo Modal: ensure cross button works correctly
-    closePhotoModal.addEventListener("click", (e) => {
-      e.stopPropagation();
-      photoModal.classList.remove("show");
-    });
-    
-    // Debounce for Order No Filter
-    const debouncedLoadData = debounce((skip) => { loadData(skip); }, 300);
-    filterDate.addEventListener("change", () => { loadData(); });
-    filterMonth.addEventListener("change", () => { loadData(); });
-    filterYear.addEventListener("input", () => { loadData(); });
-    filterOrderNo.addEventListener("input", () => { debouncedLoadData(true); });
-    window.addEventListener("load", () => { loadData(); });
-    
-    // Modify Modal Functions (Order Number Search)
-    const modifyModal = document.getElementById("modifyModal");
-    const modifyBtn = document.getElementById("modifyBtn");
-    const closeModifyModal = document.getElementById("closeModifyModal");
-    modifyBtn.addEventListener("click", () => { modifyModal.classList.add("show"); });
-    closeModifyModal.addEventListener("click", () => { modifyModal.classList.remove("show"); });
-    window.addEventListener("click", (e) => { if(e.target === modifyModal) { modifyModal.classList.remove("show"); } });
-    document.getElementById("searchOrderBtn").addEventListener("click", searchOrder);
-    
-    async function searchOrder() {
-      const orderNo = document.getElementById("modifyOrderNo").value.trim();
-      if(!orderNo) {
-        showToast("অনুগ্রহ করে অর্ডার নং প্রবেশ করুন", "error");
-        return;
-      }
-      showLoading();
-      const { data, error } = await supabaseClient.from('data_entries').select('*').ilike('order_no', `%${orderNo}%`);
-      hideLoading();
-      const resultsDiv = document.getElementById("modifyResults");
-      resultsDiv.innerHTML = "";
-      if(error) {
-        resultsDiv.innerHTML = "<p>ডেটা লোডে সমস্যা: " + error.message + "</p>";
-        return;
-      }
-      if(data.length === 0) {
-        resultsDiv.innerHTML = "<p>কোনও ডেটা পাওয়া যায়নি</p>";
-        return;
-      }
-      // Build results table with three-line icon in each row
-      let html = '<div style="overflow:auto;"><table style="width:100%; border-collapse:collapse;">';
-      html += '<thead><tr style="background:#4e54c8; color:#fff;">';
-      html += '<th>তারিখ</th><th>অর্ডার নং</th><th>পার্টি নাম</th><th>সেড নং</th><th>কালার নাম</th><th>রেমার্কস</th><th>ফটো</th><th>অ্যাকশন</th>';
-      html += '</tr></thead><tbody>';
-      data.forEach(entry => {
-        let formattedDate = entry.date ? formatDate(entry.date) : '-';
-        html += `<tr style="border:1px solid #ccc; padding:8px;">
-          <td>${formattedDate}</td>
-          <td>${entry.order_no || '-'}</td>
-          <td>${entry.party_name || '-'}</td>
-          <td>${entry.seed_no || '-'}</td>
-          <td>${entry.color_name || '-'}</td>
-          <td>${entry.remarks || '-'}</td>
-          <td>${ entry.photo_url ? `<img src="${entry.photo_url}" width="50" alt="ফটো" class="preview-img">` : '-' }</td>
-          <td style="text-align:center; cursor:pointer;" onclick="openNestedActionModal(${entry.id})">☰</td>
-        </tr>`;
-      });
-      html += '</tbody></table></div>';
-      resultsDiv.innerHTML = html;
-      attachImagePreviewEvents();
-    }
-    
-    // Nested Action Modal Functions within Modify Modal
-    let currentActionId = null;
-    function openNestedActionModal(id) {
-      currentActionId = id;
-      document.getElementById("actionModal").classList.add("show");
-    }
-    document.getElementById("closeActionModal").addEventListener("click", () => {
-      document.getElementById("actionModal").classList.remove("show");
-    });
-    document.getElementById("actionEditBtn").addEventListener("click", () => {
-      document.getElementById("actionModal").classList.remove("show");
-      modifyModal.classList.remove("show");
-      editEntry(currentActionId);
-    });
-    document.getElementById("actionDeleteBtn").addEventListener("click", () => {
-      document.getElementById("actionModal").classList.remove("show");
-      modifyModal.classList.remove("show");
-      deleteEntry(currentActionId);
-    });
-  </script>
-</body>
-</html>
+      const orderN
