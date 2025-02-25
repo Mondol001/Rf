@@ -41,6 +41,11 @@
       background: #fff; width: 90%; max-width: 500px; border-radius: 8px; padding: 20px;
       position: relative; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
+    /* Data Entry Modal কে স্ক্রলযোগ্য করতে */
+    #dataModal .modal-content {
+      max-height: 90vh; 
+      overflow-y: auto;
+    }
     /* Modify Modal: scrollable */
     .modify-modal .modal-content { max-width: 80vw; max-height: 80vh; overflow: auto; }
     .modal-content h2 { margin-bottom: 15px; text-align: center; }
@@ -55,14 +60,8 @@
       flex-direction: column;
       gap: 10px;
     }
-    .mobile-only {
-      display: none;
-    }
-    @media (max-width: 767px) {
-      .mobile-only {
-        display: block;
-      }
-    }
+    .mobile-only { display: none; }
+    @media (max-width: 767px) { .mobile-only { display: block; } }
     /* Table Styles */
     .table-container { background: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); overflow: auto; }
     table { width: 100%; border-collapse: collapse; min-width: 800px; }
@@ -111,6 +110,23 @@
       body * { visibility: hidden; }
       .table-container, .table-container * { visibility: visible; }
       .table-container { position: absolute; left: 0; top: 0; }
+    }
+    /* নতুন: Count & QTY ইনপুট রো - ইনপুটগুলো ছোট এবং ইনলাইন থাকবে */
+    .count-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 5px;
+    }
+    .count-row label {
+      font-weight: 500;
+      margin-bottom: 0;
+      white-space: nowrap;
+    }
+    .count-row input[type="text"],
+    .count-row input[type="number"] {
+      width: 80px;
+      padding: 4px;
     }
   </style>
 </head>
@@ -180,6 +196,7 @@
             <th>পার্টি নাম</th>
             <th>সেড নং</th>
             <th>কালার নাম</th>
+            <th>কাউন্ট &amp; QTY</th>
             <th>রেমার্কস</th>
             <th>ফটো</th>
           </tr>
@@ -201,19 +218,65 @@
       <h2 id="modalTitle">ডেটা এন্ট্রি ফর্ম</h2>
       <form id="entryForm">
         <input type="hidden" id="entryId" name="entryId" value="">
+        
         <label for="date">তারিখ:</label>
         <input type="date" id="date" name="date" required>
+
         <label for="orderNo">অর্ডার নং:</label>
         <input type="text" id="orderNo" name="orderNo" required>
+
         <label for="partyName">পার্টি নাম:</label>
         <input type="text" id="partyName" name="partyName" required>
-        <label for="seedNo">সেড নং:</label>
+
+        <label for="seedNo">সেড নং (টেক্সট ও নম্বর মিশিয়ে):</label>
         <input type="text" id="seedNo" name="seedNo" required>
+
         <label for="colorName">কালার নাম:</label>
         <input type="text" id="colorName" name="colorName" required>
+
+        <!-- নতুন: ১, ২, ৩ রেডিও বাটন, যা এখন একটি সারিতে প্রদর্শিত হবে -->
+        <div class="count-radio-group" style="margin-top:10px; display:flex; align-items:center; gap:20px;">
+          <span>কাউন্ট কতটি নির্বাচন করবেন?</span>
+          <label for="count1Radio">
+            <input type="radio" name="countRadio" value="1" id="count1Radio"> ১ কাউন্ট
+          </label>
+          <label for="count2Radio">
+            <input type="radio" name="countRadio" value="2" id="count2Radio"> ২ কাউন্ট
+          </label>
+          <label for="count3Radio">
+            <input type="radio" name="countRadio" value="3" id="count3Radio"> ৩ কাউন্ট
+          </label>
+        </div>
+
+        <!-- ডায়নামিক ইনপুট রো, শুরুতে লুকানো -->
+        <div id="countRows" style="margin:10px 0;">
+          <!-- ১ম রো -->
+          <div id="row1" class="count-row" style="display:none;">
+            <label>Count (১):</label>
+            <input type="text" id="countVal1" placeholder="যেমন: 20/2" />
+            <label>QTY:</label>
+            <input type="number" id="qty1" min="0" />
+          </div>
+          <!-- ২য় রো -->
+          <div id="row2" class="count-row" style="display:none;">
+            <label>Count (২):</label>
+            <input type="text" id="countVal2" placeholder="যেমন: 30/2" />
+            <label>QTY:</label>
+            <input type="number" id="qty2" min="0" />
+          </div>
+          <!-- ৩য় রো -->
+          <div id="row3" class="count-row" style="display:none;">
+            <label>Count (৩):</label>
+            <input type="text" id="countVal3" placeholder="যেমন: 40/2" />
+            <label>QTY:</label>
+            <input type="number" id="qty3" min="0" />
+          </div>
+        </div>
+
         <label for="remarks">রেমার্কস:</label>
         <textarea id="remarks" name="remarks"></textarea>
-        <!-- Photo Input Wrapper: ক্যামেরা আইকন (মোবাইলে) এবং ফাইল নির্বাচন -->
+        
+        <!-- Photo Input Wrapper -->
         <div class="photo-input-wrapper">
           <div class="mobile-only">
             <button type="button" id="cameraBtn" title="ক্যামেরা থেকে ছবি তুলুন">📷</button>
@@ -267,8 +330,8 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   <script>
     // Supabase Configuration
-    const SUPABASE_URL = "https://rabjyhlinntzbnbqbmad.supabase.co"; 
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJhYmp5aGxpbm50emJuYnFibWFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDAzNzg2NDAsImV4cCI6MjA1NTk1NDY0MH0.19NyAvpxbG5czIyLmPiRQ26X3R_Wo_cqTurGIUf3hmQ"; 
+    const SUPABASE_URL = "https://rabjyhlinntzbnbqbmad.supabase.co"; // আপনার Supabase URL
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJhYmp5aGxpbm50emJuYnFibWFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDAzNzg2NDAsImV4cCI6MjA1NTk1NDY0MH0.19NyAvpxbG5czIyLmPiRQ26X3R_Wo_cqTurGIUf3hmQ"; // আপনার ANON KEY
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     
     // Elements & Variables
@@ -290,13 +353,22 @@
     const filterYear = document.getElementById("filterYear");
     const filterOrderNo = document.getElementById("filterOrderNo");
     const toggleFilterBtn = document.getElementById("toggleFilterBtn");
-    const advancedFilterSection = document.getElementById("advancedFilterSection");
     let isFilterOpen = false;
+
+    // রেডিও + ডাইনামিক রো
+    const count1Radio = document.getElementById("count1Radio");
+    const count2Radio = document.getElementById("count2Radio");
+    const count3Radio = document.getElementById("count3Radio");
+    const row1 = document.getElementById("row1");
+    const row2 = document.getElementById("row2");
+    const row3 = document.getElementById("row3");
+
+    // Advanced Filter Toggle
     toggleFilterBtn.addEventListener("click", () => {
       isFilterOpen = !isFilterOpen;
       advancedFilterSection.classList.toggle("active", isFilterOpen);
     });
-    
+
     // Data Entry Modal Handling
     openModalBtn.addEventListener("click", () => {
       setFormMode("new");
@@ -336,6 +408,19 @@
       }
     }
     
+    // রেডিও বাটন চেঞ্জ হলে row দেখানো/লুকানো (display "flex" for inline layout)
+    document.querySelectorAll('input[name="countRadio"]').forEach(radio => {
+      radio.addEventListener("change", (e) => {
+        const val = e.target.value;
+        row1.style.display = "none";
+        row2.style.display = "none";
+        row3.style.display = "none";
+        if(val === "1") { row1.style.display = "flex"; }
+        else if(val === "2") { row1.style.display = "flex"; row2.style.display = "flex"; }
+        else if(val === "3") { row1.style.display = "flex"; row2.style.display = "flex"; row3.style.display = "flex"; }
+      });
+    });
+    
     // Image Upload Function
     async function uploadImage(file) {
       try {
@@ -363,7 +448,7 @@
       const seedNoVal = document.getElementById("seedNo").value;
       const colorNameVal = document.getElementById("colorName").value;
       const remarksVal = document.getElementById("remarks").value;
-      // Check both camera and file inputs
+      
       const photoCameraFile = document.getElementById("photoCamera").files[0];
       const photoFileInput = document.getElementById("photoFile").files[0];
       const selectedFile = photoCameraFile || photoFileInput;
@@ -372,11 +457,54 @@
         photoUrl = await uploadImage(selectedFile);
         if (!photoUrl) { hideModalLoading(); return; }
       }
+      
+      let selectedCountRadio = document.querySelector('input[name="countRadio"]:checked');
+      if(!selectedCountRadio) {
+        hideModalLoading();
+        showToast("কাউন্ট কতটি হবে, নির্বাচন করুন!", "error");
+        return;
+      }
+      let selectedCount = parseInt(selectedCountRadio.value, 10);
+      
+      let countsData = [];
+      if(selectedCount >= 1) {
+        const c1 = document.getElementById("countVal1").value;
+        const q1 = document.getElementById("qty1").value;
+        countsData.push({ count: c1, qty: q1 });
+      }
+      if(selectedCount >= 2) {
+        const c2 = document.getElementById("countVal2").value;
+        const q2 = document.getElementById("qty2").value;
+        countsData.push({ count: c2, qty: q2 });
+      }
+      if(selectedCount >= 3) {
+        const c3 = document.getElementById("countVal3").value;
+        const q3 = document.getElementById("qty3").value;
+        countsData.push({ count: c3, qty: q3 });
+      }
+      
       let error;
       if(!idVal) {
-        ({ error } = await supabaseClient.from('data_entries').insert([{ date: dateVal, order_no: orderNoVal, party_name: partyNameVal, seed_no: seedNoVal, color_name: colorNameVal, remarks: remarksVal, photo_url: photoUrl }]));
+        ({ error } = await supabaseClient.from('data_entries').insert([{
+           date: dateVal,
+           order_no: orderNoVal,
+           party_name: partyNameVal,
+           seed_no: seedNoVal,
+           color_name: colorNameVal,
+           remarks: remarksVal,
+           photo_url: photoUrl,
+           counts_data: countsData
+        }]));
       } else {
-        let updateData = { date: dateVal, order_no: orderNoVal, party_name: partyNameVal, seed_no: seedNoVal, color_name: colorNameVal, remarks: remarksVal };
+        let updateData = {
+           date: dateVal,
+           order_no: orderNoVal,
+           party_name: partyNameVal,
+           seed_no: seedNoVal,
+           color_name: colorNameVal,
+           remarks: remarksVal,
+           counts_data: countsData
+        };
         if(photoUrl) { updateData.photo_url = photoUrl; }
         ({ error } = await supabaseClient.from('data_entries').update(updateData).eq('id', idVal));
       }
@@ -387,17 +515,31 @@
         showToast("ডেটা সফলভাবে সংরক্ষণ হয়েছে");
         modal.classList.remove("show");
         entryForm.reset();
+        resetCountRows();
         loadData();
       }
     });
     
-    // Set Form Mode (New or Edit)
+    function resetCountRows() {
+      document.querySelectorAll('input[name="countRadio"]').forEach(r => r.checked = false);
+      row1.style.display = "none";
+      row2.style.display = "none";
+      row3.style.display = "none";
+      document.getElementById("countVal1").value = "";
+      document.getElementById("qty1").value = "";
+      document.getElementById("countVal2").value = "";
+      document.getElementById("qty2").value = "";
+      document.getElementById("countVal3").value = "";
+      document.getElementById("qty3").value = "";
+    }
+    
     function setFormMode(mode, entry=null) {
       if(mode === "new") {
         modalTitle.innerText = "ডেটা এন্ট্রি ফর্ম";
         submitBtn.innerText = "সেভ করুন";
         entryIdField.value = "";
         entryForm.reset();
+        resetCountRows();
       } else if(mode === "edit" && entry) {
         modalTitle.innerText = "ডেটা এডিট ফর্ম";
         submitBtn.innerText = "আপডেট করুন";
@@ -408,10 +550,28 @@
         document.getElementById("seedNo").value = entry.seed_no || "";
         document.getElementById("colorName").value = entry.color_name || "";
         document.getElementById("remarks").value = entry.remarks || "";
+        resetCountRows();
+        if(entry.counts_data && Array.isArray(entry.counts_data)) {
+          let length = entry.counts_data.length;
+          if(length === 1) { count1Radio.checked = true; row1.style.display = "flex"; }
+          else if(length === 2) { count2Radio.checked = true; row1.style.display = "flex"; row2.style.display = "flex"; }
+          else if(length === 3) { count3Radio.checked = true; row1.style.display = "flex"; row2.style.display = "flex"; row3.style.display = "flex"; }
+          if(entry.counts_data[0]) {
+            document.getElementById("countVal1").value = entry.counts_data[0].count || "";
+            document.getElementById("qty1").value = entry.counts_data[0].qty || "";
+          }
+          if(entry.counts_data[1]) {
+            document.getElementById("countVal2").value = entry.counts_data[1].count || "";
+            document.getElementById("qty2").value = entry.counts_data[1].qty || "";
+          }
+          if(entry.counts_data[2]) {
+            document.getElementById("countVal3").value = entry.counts_data[2].count || "";
+            document.getElementById("qty3").value = entry.counts_data[2].qty || "";
+          }
+        }
       }
     }
     
-    // Edit & Delete Functions
     async function editEntry(id) {
       showLoading();
       const { data, error } = await supabaseClient.from('data_entries').select('*').eq('id', id).single();
@@ -437,16 +597,15 @@
       }
     }
     
-    // Format Date as DD-MM-YYYY
     function formatDate(dateStr) {
       let date = new Date(dateStr);
+      if(isNaN(date)) return '-';
       let day = date.getDate();
       let month = date.getMonth() + 1;
       let year = date.getFullYear();
       return (day < 10 ? "0" + day : day) + "-" + (month < 10 ? "0" + month : month) + "-" + year;
     }
     
-    // Load Data for Main Table (No Action Column)
     async function loadData(skipLoading = false) {
       if(!skipLoading) showLoading();
       let query = supabaseClient.from('data_entries').select('*').order('id', { ascending: false });
@@ -467,7 +626,13 @@
       const tbody = document.getElementById("dataTable").querySelector("tbody");
       tbody.innerHTML = "";
       data.forEach(entry => {
-        let formattedDate = entry.date ? formatDate(entry.date) : '-';
+        let formattedDate = formatDate(entry.date);
+        let countDisplay = "-";
+        if(entry.counts_data && Array.isArray(entry.counts_data) && entry.counts_data.length > 0) {
+          const lines = entry.counts_data.map(cd => `${cd.count || '-'} = ${cd.qty || '0'}`);
+          const total = entry.counts_data.reduce((sum, cd) => sum + Number(cd.qty || 0), 0);
+          countDisplay = lines.join("<br>") + "<br>____________<br>টোটাল = " + total;
+        }
         const tr = document.createElement("tr");
         tr.innerHTML = `
           <td>${formattedDate}</td>
@@ -475,6 +640,7 @@
           <td>${entry.party_name || '-'}</td>
           <td>${entry.seed_no || '-'}</td>
           <td>${entry.color_name || '-'}</td>
+          <td>${countDisplay}</td>
           <td>${entry.remarks || '-'}</td>
           <td>${ entry.photo_url ? `<img src="${entry.photo_url}" width="50" alt="ফটো" class="preview-img">` : '-' }</td>
         `;
@@ -483,18 +649,14 @@
       attachImagePreviewEvents();
     }
     
-    // Photo Preview Modal: Zoom, Pan & Limit Zoom-Out to Original Size
-    let currentScale = 1;
-    let translateX = 0, translateY = 0;
+    let currentScale = 1, translateX = 0, translateY = 0;
     let isDragging = false, dragStartX = 0, dragStartY = 0;
-    
     function resetTransform() {
       currentScale = 1;
       translateX = 0;
       translateY = 0;
       modalImg.style.transform = "translate(0px, 0px) scale(1)";
     }
-    
     function attachImagePreviewEvents() {
       const images = document.querySelectorAll(".preview-img");
       images.forEach(img => {
@@ -507,8 +669,6 @@
         });
       });
     }
-    
-    // PC: Keydown for zoom (Ctrl +/+ and Ctrl -)
     window.addEventListener("keydown", function(e) {
       if(photoModal.classList.contains("show") && e.ctrlKey){
         if(e.key === '+' || e.key === '='){
@@ -516,15 +676,12 @@
           modalImg.style.transform = `translate(${translateX}px, ${translateY}px) scale(${currentScale})`;
           e.preventDefault();
         } else if(e.key === '-'){
-          // Limit zoom-out: minimum scale is 1 (original size)
           currentScale = Math.max(1, currentScale - 0.1);
           modalImg.style.transform = `translate(${translateX}px, ${translateY}px) scale(${currentScale})`;
           e.preventDefault();
         }
       }
     });
-    
-    // PC: Mouse drag for panning
     modalImg.addEventListener("mousedown", function(e) {
       isDragging = true;
       dragStartX = e.clientX - translateX;
@@ -540,15 +697,10 @@
     window.addEventListener("mouseup", function(e) {
       isDragging = false;
     });
-    
-    // Mobile: Touch events for zoom (pinch) and pan (one-finger drag)
     let initialDistance = null, initialScale = 1;
     modalImg.addEventListener("touchstart", function(e) {
       if(e.touches.length === 2){
-        initialDistance = Math.hypot(
-          e.touches[0].pageX - e.touches[1].pageX, 
-          e.touches[0].pageY - e.touches[1].pageY
-        );
+        initialDistance = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY);
         initialScale = currentScale;
       } else if(e.touches.length === 1){
         isDragging = true;
@@ -558,11 +710,7 @@
     });
     modalImg.addEventListener("touchmove", function(e) {
       if(e.touches.length === 2 && initialDistance){
-        let newDistance = Math.hypot(
-          e.touches[0].pageX - e.touches[1].pageX, 
-          e.touches[0].pageY - e.touches[1].pageY
-        );
-        // Limit zoom-out: minimum scale is 1
+        let newDistance = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY);
         currentScale = Math.max(1, initialScale * (newDistance / initialDistance));
         modalImg.style.transform = `translate(${translateX}px, ${translateY}px) scale(${currentScale})`;
         e.preventDefault();
@@ -574,21 +722,13 @@
       }
     });
     modalImg.addEventListener("touchend", function(e) {
-      if(e.touches.length < 2){
-        initialDistance = null;
-      }
-      if(e.touches.length === 0){
-        isDragging = false;
-      }
+      if(e.touches.length < 2){ initialDistance = null; }
+      if(e.touches.length === 0){ isDragging = false; }
     });
-    
-    // Close Photo Modal: ensure cross button works correctly
     closePhotoModal.addEventListener("click", (e) => {
       e.stopPropagation();
       photoModal.classList.remove("show");
     });
-    
-    // Debounce for Order No Filter
     const debouncedLoadData = debounce((skip) => { loadData(skip); }, 300);
     filterDate.addEventListener("change", () => { loadData(); });
     filterMonth.addEventListener("change", () => { loadData(); });
@@ -596,7 +736,6 @@
     filterOrderNo.addEventListener("input", () => { debouncedLoadData(true); });
     window.addEventListener("load", () => { loadData(); });
     
-    // Modify Modal Functions (Order Number Search)
     const modifyModal = document.getElementById("modifyModal");
     const modifyBtn = document.getElementById("modifyBtn");
     const closeModifyModal = document.getElementById("closeModifyModal");
@@ -624,19 +763,25 @@
         resultsDiv.innerHTML = "<p>কোনও ডেটা পাওয়া যায়নি</p>";
         return;
       }
-      // Build results table with three-line icon in each row
       let html = '<div style="overflow:auto;"><table style="width:100%; border-collapse:collapse;">';
       html += '<thead><tr style="background:#4e54c8; color:#fff;">';
-      html += '<th>তারিখ</th><th>অর্ডার নং</th><th>পার্টি নাম</th><th>সেড নং</th><th>কালার নাম</th><th>রেমার্কস</th><th>ফটো</th><th>অ্যাকশন</th>';
+      html += '<th>তারিখ</th><th>অর্ডার নং</th><th>পার্টি নাম</th><th>সেড নং</th><th>কালার নাম</th><th>কাউন্ট &amp; QTY</th><th>রেমার্কস</th><th>ফটো</th><th>অ্যাকশন</th>';
       html += '</tr></thead><tbody>';
       data.forEach(entry => {
-        let formattedDate = entry.date ? formatDate(entry.date) : '-';
+        let formattedDate = formatDate(entry.date);
+        let countDisplay = "-";
+        if(entry.counts_data && Array.isArray(entry.counts_data) && entry.counts_data.length > 0) {
+          const lines = entry.counts_data.map(cd => `${cd.count || '-'} = ${cd.qty || '0'}`);
+          const total = entry.counts_data.reduce((sum, cd) => sum + Number(cd.qty || 0), 0);
+          countDisplay = lines.join("<br>") + "<br>____________<br>টোটাল = " + total;
+        }
         html += `<tr style="border:1px solid #ccc; padding:8px;">
           <td>${formattedDate}</td>
           <td>${entry.order_no || '-'}</td>
           <td>${entry.party_name || '-'}</td>
           <td>${entry.seed_no || '-'}</td>
           <td>${entry.color_name || '-'}</td>
+          <td>${countDisplay}</td>
           <td>${entry.remarks || '-'}</td>
           <td>${ entry.photo_url ? `<img src="${entry.photo_url}" width="50" alt="ফটো" class="preview-img">` : '-' }</td>
           <td style="text-align:center; cursor:pointer;" onclick="openNestedActionModal(${entry.id})">☰</td>
@@ -647,7 +792,6 @@
       attachImagePreviewEvents();
     }
     
-    // Nested Action Modal Functions within Modify Modal
     let currentActionId = null;
     function openNestedActionModal(id) {
       currentActionId = id;
@@ -667,7 +811,6 @@
       deleteEntry(currentActionId);
     });
     
-    // Camera button click to trigger camera input
     document.getElementById("cameraBtn").addEventListener("click", () => {
       document.getElementById("photoCamera").click();
     });
