@@ -8,27 +8,99 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <!-- Select2 CSS (used only for Order Search in Modify Modal) -->
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+  <!-- jQuery (required for Select2 in Modify Modal) -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <style>
     /* Reset & Global Styles */
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Roboto', sans-serif; background: #f7f7f7; color: #333; min-height: 100vh; }
-    /* Header */
-    header { background: linear-gradient(135deg, #4e54c8, #8f94fb); padding: 20px; text-align: center; color: #fff; }
+    body { font-family: 'Roboto', sans-serif; background: #fdfdfd; color: #333; min-height: 100vh; }
+    
+    /* Header with Menu, Random Logo & Animated Title */
+    header { 
+      background: linear-gradient(135deg, #f6d365, #fda085); 
+      padding: 20px; 
+      color: #fff; 
+      text-align: center;
+      position: relative;
+    }
+    .header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      margin-bottom: 10px;
+    }
+    .logo { 
+      height: 50px; 
+      width: 50px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    .menu ul {
+      list-style: none;
+      display: flex;
+      gap: 15px;
+      margin: 0;
+      padding: 0;
+    }
+    .menu ul li a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    /* Animated Rainbow Title */
+    header h1 {
+      font-size: 2em;
+      animation: rainbow 5s infinite;
+    }
+    @keyframes rainbow {
+      0%   { color: red; }
+      14%  { color: orange; }
+      28%  { color: yellow; }
+      42%  { color: green; }
+      57%  { color: blue; }
+      71%  { color: indigo; }
+      85%  { color: violet; }
+      100% { color: red; }
+    }
+    
     /* Container */
     .container { max-width: 1200px; margin: auto; padding: 20px; }
+    
     /* Top Controls */
     .top-controls { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 20px; }
-    button { background: #4e54c8; color: #fff; border: none; padding: 10px 20px; cursor: pointer; border-radius: 4px; transition: background 0.3s ease; }
-    button:hover { background: #3c44a0; }
+    button { 
+      background: #fda085; 
+      color: #fff; 
+      border: none; 
+      padding: 10px 20px; 
+      cursor: pointer; 
+      border-radius: 4px; 
+      transition: background 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    button:hover { 
+      background: #f6d365; 
+      box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+    }
+    
     /* Filter Area */
     .filter-area { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
     .filter-area label { font-weight: 500; margin-bottom: 5px; display: block; }
     .filter-area input, .filter-area select { border: 1px solid #ccc; border-radius: 4px; padding: 6px 10px; }
-    /* Advanced Filter */
-    .advanced-filter-toggle { background: #3c44a0; padding: 8px 14px; border-radius: 4px; color: #fff; cursor: pointer; }
-    .advanced-filter { background: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-top: 10px; margin-bottom: 20px; display: none; flex-wrap: wrap; gap: 10px; }
+    
+    /* Advanced Filter (Only Date Picker & Seed No) */
+    .advanced-filter-toggle { background: #f6d365; padding: 8px 14px; border-radius: 4px; color: #fff; cursor: pointer; }
+    .advanced-filter { 
+      background: #fff; padding: 15px; border-radius: 8px; 
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-top: 10px; margin-bottom: 20px; 
+      display: none; flex-wrap: wrap; gap: 10px; 
+    }
     .advanced-filter.active { display: flex; }
     .advanced-filter > div { display: flex; flex-direction: column; }
+    
     /* Modal Styles */
     .modal {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -41,43 +113,45 @@
       background: #fff; width: 90%; max-width: 500px; border-radius: 8px; padding: 20px;
       position: relative; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
-    /* Data Entry Modal কে স্ক্রলযোগ্য করতে */
-    #dataModal .modal-content {
-      max-height: 90vh; 
-      overflow-y: auto;
-    }
-    /* Modify Modal: scrollable */
+    /* Make Data Entry & Modify Modals Scrollable */
+    #dataModal .modal-content { max-height: 90vh; overflow-y: auto; }
     .modify-modal .modal-content { max-width: 80vw; max-height: 80vh; overflow: auto; }
     .modal-content h2 { margin-bottom: 15px; text-align: center; }
     .modal-content .close { position: absolute; top: 10px; right: 10px; font-size: 24px; cursor: pointer; color: #888; }
     .modal-content .close:hover { color: #333; }
     .modal-loading { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); display: flex; justify-content: center; align-items: center; z-index: 10; }
+    
     form label { margin-top: 10px; display: block; font-weight: 500; }
-    form input, form textarea { width: 100%; margin-top: 5px; margin-bottom: 10px; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+    form input, form textarea, form select { width: 100%; margin-top: 5px; margin-bottom: 10px; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+    
+    /* Datalist Styles (if needed, browser default is used) */
+    
     /* Photo Input Wrapper */
-    .photo-input-wrapper {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
+    .photo-input-wrapper { display: flex; flex-direction: column; gap: 10px; }
     .mobile-only { display: none; }
     @media (max-width: 767px) { .mobile-only { display: block; } }
+    
     /* Table Styles */
     .table-container { background: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); overflow: auto; }
     table { width: 100%; border-collapse: collapse; min-width: 800px; }
-    table thead tr { background: linear-gradient(135deg, #4e54c8, #8f94fb); color: #fff; }
-    table th, table td { padding: 12px 15px; border: 1px solid black; text-align: left; vertical-align: middle; }
+    table thead tr { background: linear-gradient(135deg, #f6d365, #fda085); color: #fff; }
+    table th, table td { padding: 12px 15px; border: 1px solid #ddd; text-align: left; vertical-align: middle; }
     table tbody tr:nth-child(even) { background: #f9f9f9; }
     table tbody tr:hover { background: #f1f1f1; }
     table img { border-radius: 4px; cursor: pointer; }
+    /* Table Footer for Overall Subtotal */
+    table tfoot tr { background: #f6d365; color: #fff; font-weight: bold; }
+    
     /* Action Icon in Modify Modal's Results */
     .action-icon { cursor: pointer; font-size: 20px; }
-    /* Nested Action Modal inside Modify Modal */
+    
+    /* Nested Action Modal */
     .nested-modal {
       position: absolute; top: 10%; left: 50%; transform: translateX(-50%);
       z-index: 1100; display: none;
     }
     .nested-modal.show { display: block; }
+    
     /* Global Loading Overlay */
     .loading-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -86,8 +160,9 @@
       z-index: 999; opacity: 0; pointer-events: none; transition: opacity 0.2s ease;
     }
     .loading-overlay.show { opacity: 1; pointer-events: auto; }
-    .spinner { width: 40px; height: 40px; border: 4px solid #ccc; border-top: 4px solid #4e54c8; border-radius: 50%; animation: spin 0.8s linear infinite; }
+    .spinner { width: 40px; height: 40px; border: 4px solid #ccc; border-top: 4px solid #fda085; border-radius: 50%; animation: spin 0.8s linear infinite; }
     @keyframes spin { 100% { transform: rotate(360deg); } }
+    
     /* Photo Modal with Zoom & Pan */
     .photo-modal { 
       position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
@@ -99,19 +174,21 @@
     .photo-modal-content img { width: 100%; height: auto; border-radius: 4px; display: block; transition: transform 0.2s ease; }
     .photo-modal .close-photo { position: absolute; top: -40px; right: 0; color: #fff; font-size: 30px; cursor: pointer; }
     #photoSpinner { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: none; }
+    
     /* Footer */
     footer { text-align: center; padding: 10px; background: #333; color: #fff; margin-top: 20px; }
+    
     /* Toast Message */
-    .toast { position: fixed; top: 10px; right: 10px; background: #4e54c8; color: #fff; padding: 10px 15px; border-radius: 4px; box-shadow: 0 2px 6px rgba(0,0,0,0.2); opacity: 0; transform: translateY(-20px); transition: opacity 0.3s, transform 0.3s; z-index: 3000; pointer-events: none; }
+    .toast { 
+      position: fixed; top: 10px; right: 10px; background: #fda085; 
+      color: #fff; padding: 10px 15px; border-radius: 4px; box-shadow: 0 2px 6px rgba(0,0,0,0.2); 
+      opacity: 0; transform: translateY(-20px); transition: opacity 0.3s, transform 0.3s; 
+      z-index: 3000; pointer-events: none; 
+    }
     .toast.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
     .toast.error { background: #d9534f; }
-    /* Print: Only table prints */
-    @media print {
-      body * { visibility: hidden; }
-      .table-container, .table-container * { visibility: visible; }
-      .table-container { position: absolute; left: 0; top: 0; }
-    }
-    /* নতুন: Count & QTY ইনপুট রো - ইনপুটগুলো ছোট এবং ইনলাইন থাকবে */
+    
+    /* Count & QTY Input Row */
     .count-row {
       display: flex;
       align-items: center;
@@ -123,7 +200,7 @@
       margin-bottom: 0;
       white-space: nowrap;
     }
-    .count-row input[type="text"],
+    .count-row select,
     .count-row input[type="number"] {
       width: 80px;
       padding: 4px;
@@ -131,7 +208,18 @@
   </style>
 </head>
 <body>
+  <!-- Header with Random Logo & Animated Title -->
   <header>
+    <div class="header-top">
+      <img src="https://picsum.photos/50" alt="Logo" class="logo">
+      <nav class="menu">
+        <ul>
+          <li><a href="#">হোম</a></li>
+          <li><a href="#">সেবা</a></li>
+          <li><a href="#">যোগাযোগ</a></li>
+        </ul>
+      </nav>
+    </div>
     <h1>Zubair Works Space</h1>
   </header>
   
@@ -157,36 +245,18 @@
         <button class="advanced-filter-toggle" id="toggleFilterBtn">অ্যাডভান্সড ফিল্টার</button>
       </div>
     </div>
-    <!-- Advanced Filter Collapsible -->
+    <!-- Advanced Filter (Only Date Picker & Seed No) -->
     <div class="advanced-filter" id="advancedFilterSection">
       <div>
         <label for="filterDate">তারিখ</label>
         <input type="date" id="filterDate">
       </div>
       <div>
-        <label for="filterMonth">মাস</label>
-        <select id="filterMonth">
-          <option value="">-- নির্বাচন করুন --</option>
-          <option value="01">জানুয়ারি</option>
-          <option value="02">ফেব্রুয়ারি</option>
-          <option value="03">মার্চ</option>
-          <option value="04">এপ্রিল</option>
-          <option value="05">মে</option>
-          <option value="06">জুন</option>
-          <option value="07">জুলাই</option>
-          <option value="08">আগস্ট</option>
-          <option value="09">সেপ্টেম্বর</option>
-          <option value="10">অক্টোবর</option>
-          <option value="11">নভেম্বর</option>
-          <option value="12">ডিসেম্বর</option>
-        </select>
-      </div>
-      <div>
-        <label for="filterYear">বছর</label>
-        <input type="number" id="filterYear" placeholder="বছর (যেমন: 2025)">
+        <label for="filterSeedNo">সেড নং</label>
+        <input type="text" id="filterSeedNo" placeholder="সেড নং">
       </div>
     </div>
-    <!-- Main Data Table (No Action Column) -->
+    <!-- Main Data Table with Overall Subtotal Footer -->
     <div class="table-container">
       <table id="dataTable">
         <thead>
@@ -202,8 +272,15 @@
           </tr>
         </thead>
         <tbody>
-          <!-- Data loaded via JavaScript -->
+          <!-- Data will be loaded here dynamically -->
         </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="5" style="text-align:right;">সর্বমোট:</td>
+            <td id="overallSubtotal">0</td>
+            <td colspan="2"></td>
+          </tr>
+        </tfoot>
       </table>
     </div>
   </div>
@@ -221,20 +298,128 @@
         
         <label for="date">তারিখ:</label>
         <input type="date" id="date" name="date" required>
-
+        
         <label for="orderNo">অর্ডার নং:</label>
         <input type="text" id="orderNo" name="orderNo" required>
-
+        
+        <!-- Party Name with datalist suggestions -->
         <label for="partyName">পার্টি নাম:</label>
-        <input type="text" id="partyName" name="partyName" required>
-
-        <label for="seedNo">সেড নং (টেক্সট ও নম্বর মিশিয়ে):</label>
-        <input type="text" id="seedNo" name="seedNo" required>
-
+        <input type="text" id="partyName" name="partyName" list="partyNames" required>
+        <datalist id="partyNames">
+          <option value="DELUXE APPARELS LTD.">
+          <option value="TROUSER WORLD (PVT ) LTD.">
+          <option value="CIRCULAR FASHION INDUSTRIES LIMITED">
+          <option value="NPM APPARELS LTD.">
+          <option value="SHIRT AND JACKET ZONE LTD.">
+          <option value="AB APPARELS LTD.">
+          <option value="UNIFORM TEXTILE LTD.">
+          <option value="BALAKA STITCH (PVT) LTD.">
+          <option value="ZAS APPARELS (PVT.) LTD">
+          <option value="RBSR FASHIONS LTD.">
+          <option value="SMEE APPARELS LTD.">
+          <option value="RAM APPAREL LTD">
+          <option value="MAJUMDER GARMENTS LTD.">
+          <option value="ALIF CASUAL WEAR LIMITED">
+          <option value="CORETEX APPARELS LTD.">
+          <option value="SUSUKA KNIT LTD.">
+          <option value="LAKHSMA INNERWEAR LTD.">
+          <option value="SEACOTEX FABRICS LTD.">
+          <option value="RICH COTTON APPAREL LTD.">
+          <option value="ROWA FASHIONS LTD.">
+          <option value="EURO DENIM & FASHION LTD.">
+          <option value="ALIF INDUSTRIES LTD.">
+          <option value="ZALO KNITTING LTD.">
+          <option value="NIPPON GARMENT INDUSTRIES LTD">
+          <option value="KC BOTTOM AND SHIRT WEAR COMPANY">
+          <option value="GLOBAL FASHION GARMENTS LIMITED">
+          <option value="AMENA PVT.LTD.">
+          <option value="APICAL INDUSTRIES LTD.">
+          <option value="TOP MOON FASHION LTD.">
+          <option value="NEWAGE APPARELS LTD.">
+          <option value="ALI GARMENTS LTD.">
+          <option value="KC JACKET WEAR COMPANY">
+          <option value="ALLIANCE KNIT COMPOSITE LTD.">
+          <option value="AR JEANS PRODUCER LTD.">
+          <option value="VIRTUAL BOTTOMS LTD.">
+          <option value="IDAS FASHION LTD.">
+          <option value="DAY APPARELS LTD.">
+          <option value="SELINA APPARELS LTD.">
+          <option value="SPOTFAME APPARELS LTD">
+          <option value="SAJIB FASHION WEAR LTD.">
+          <option value="EURO ARTE APPARELS LTD.">
+          <option value="MANEL FASHION LIMITED">
+          <option value="NIPA FASHION WEAR IND LTD.">
+          <option value="IMPRESSION SOURCING & DESIGN LTD">
+          <option value="MOSTAFA GARMENTS INDUSTRES LTD.">
+          <option value="CONCORD RAIMENT WEAR LTD.">
+          <option value="AYASHA AND GALEYA FASHIONS LTD.">
+          <option value="CELEBRITY EXPORT GARMENTS LTD.">
+          <option value="SWAN JEANS LTD.">
+          <option value="BELLISSIMA APPARELS LTD.">
+          <option value="EHSAN GARMENTS LTD.">
+          <option value="DHAKA GARMENTS AND WASHING LTD.">
+          <option value="LOGOS APPARELS LTD.">
+          <option value="GARMENTS EXPORT VILLAGE LTD.">
+          <option value="A & A TROUSERS LTD.">
+          <option value="AUTHENTIC GARMENTS (PVT) LIMITED">
+          <option value="TIVOLI APPARELS LTD.">
+          <option value="ORIENT FASHION LIMITED">
+          <option value="A.J. SUPER GARMENTS LTD.">
+          <option value="DESIGNER FASHION LIMITED">
+          <option value="DOREEN APPARALS LTD">
+          <option value="SP GARMENTS LTD.">
+          <option value="NATURAL DENIMS LTD.">
+          <option value="POWER VANTAGE WEAR LTD.">
+          <option value="ROBINTEX(BANGLADESH) LIMITED">
+          <option value="JB TEX BD.">
+          <option value="EPOCH GARMENTS LTD.">
+          <option value="AMEX KNITTING & DYEING INDUSTRIES LTD.">
+          <option value="TEMAKAW FASHION  LIMITED.">
+          <option value="EUROZONE FASHION LTD.">
+          <option value="MORAL FASHIONS LTD.">
+          <option value="YAGI BANGLADESH GARMENTS LTD.">
+          <option value="VALMONT FASHIONS LTD.">
+          <option value="RIVERSTAR FASHION WEAR LIMITED">
+          <option value="FARDAR FASHIONS LTD.">
+          <option value="NASSA BASICS LTD">
+          <option value="TOP STAR FASHIONS LTD.">
+          <option value="MOONLIGHT GARMENTS  LTD.">
+          <option value="MURAD APPARELS LTD.">
+          <option value="PAKIZA KNIT COMPOSITE LTD.">
+          <option value="RIO DESIGN LTD.">
+          <option value="DAY FASHIONS LTD">
+          <option value="BRAVO APPAREL MANUFACTURER LTD">
+          <option value="HAMID TEX FASHION LTD.">
+          <option value="KIMS CORPORATION LTD">
+          <option value="TUNIC APPARELS LTD.">
+          <option value="ASPIRE GARMENTS LTD">
+          <option value="QUAZI ABEDIN TEX LTD.">
+          <option value="A PLUS INDUSTRIES LIMITED.">
+          <option value="DRESSMEN FASHION WEAR LTD.">
+          <option value="VERSATILE APPAREL PVT LTD.">
+          <option value="MOMO FASHIONS LTD.">
+          <option value="IMPRESSION DESIGN">
+          <option value="PLATINUM APPAREL MANUFACTURING COMPANY LTD.">
+          <option value="FASHION EXPORT INTERNATIONAL LTD.">
+          <option value="TARASIMA APPARELS LIMITED">
+          <option value="PATRIOT ECO APPARELS LTD">
+          <option value="SEHA APPARELS INTERNATIONAL LIMITED">
+          <option value="MAHADI FASHION ( PVT) LTD.">
+          <option value="RIO FASHION WEAR LTD">
+          <option value="TEX TECH CO. LTD">
+          <option value="AJ FASHIONS LTD.">
+          <option value="MEGHNA DENIMS LTD.">
+          <option value="BANGA FASHION LTD">
+          <option value="S2L FASHIONS (PVT.) LTD.">
+          <option value="DOREEN GARMENTS LIMITED">
+          <option value="MAHMUD FASHION LTD.">
+          <option value="DIPS APPAREL LTD.">
+        </datalist>
+        
         <label for="colorName">কালার নাম:</label>
         <input type="text" id="colorName" name="colorName" required>
-
-        <!-- নতুন: ১, ২, ৩ রেডিও বাটন, যা এখন একটি সারিতে প্রদর্শিত হবে -->
+        
+        <!-- Count Radio Buttons (১, ২, ৩, ৪ কাউন্ট) -->
         <div class="count-radio-group" style="margin-top:10px; display:flex; align-items:center; gap:20px;">
           <span>কাউন্ট কতটি নির্বাচন করবেন?</span>
           <label for="count1Radio">
@@ -246,33 +431,99 @@
           <label for="count3Radio">
             <input type="radio" name="countRadio" value="3" id="count3Radio"> ৩ কাউন্ট
           </label>
+          <label for="count4Radio">
+            <input type="radio" name="countRadio" value="4" id="count4Radio"> ৪ কাউন্ট
+          </label>
         </div>
-
-        <!-- ডায়নামিক ইনপুট রো, শুরুতে লুকানো -->
+        
+        <!-- Dynamic Count Rows with Plain Dropdowns -->
         <div id="countRows" style="margin:10px 0;">
-          <!-- ১ম রো -->
+          <!-- Row 1 -->
           <div id="row1" class="count-row" style="display:none;">
             <label>Count (১):</label>
-            <input type="text" id="countVal1" placeholder="যেমন: 20/2" />
+            <select id="countVal1">
+              <option value="">-- নির্বাচন করুন --</option>
+              <option value="50/2">50/2</option>
+              <option value="40/2">40/2</option>
+              <option value="40/3">40/3</option>
+              <option value="20/2">20/2</option>
+              <option value="20/3">20/3</option>
+              <option value="20/4">20/4</option>
+              <option value="20/6">20/6</option>
+              <option value="20/9">20/9</option>
+              <option value="30/3">30/3</option>
+              <option value="150/D">150/D</option>
+              <option value="300/D">300/D</option>
+              <option value="60/3">60/3</option>
+            </select>
             <label>QTY:</label>
             <input type="number" id="qty1" min="0" />
           </div>
-          <!-- ২য় রো -->
+          <!-- Row 2 -->
           <div id="row2" class="count-row" style="display:none;">
             <label>Count (২):</label>
-            <input type="text" id="countVal2" placeholder="যেমন: 30/2" />
+            <select id="countVal2">
+              <option value="">-- নির্বাচন করুন --</option>
+              <option value="50/2">50/2</option>
+              <option value="40/2">40/2</option>
+              <option value="40/3">40/3</option>
+              <option value="20/2">20/2</option>
+              <option value="20/3">20/3</option>
+              <option value="20/4">20/4</option>
+              <option value="20/6">20/6</option>
+              <option value="20/9">20/9</option>
+              <option value="30/3">30/3</option>
+              <option value="150/D">150/D</option>
+              <option value="300/D">300/D</option>
+              <option value="60/3">60/3</option>
+            </select>
             <label>QTY:</label>
             <input type="number" id="qty2" min="0" />
           </div>
-          <!-- ৩য় রো -->
+          <!-- Row 3 -->
           <div id="row3" class="count-row" style="display:none;">
             <label>Count (৩):</label>
-            <input type="text" id="countVal3" placeholder="যেমন: 40/2" />
+            <select id="countVal3">
+              <option value="">-- নির্বাচন করুন --</option>
+              <option value="50/2">50/2</option>
+              <option value="40/2">40/2</option>
+              <option value="40/3">40/3</option>
+              <option value="20/2">20/2</option>
+              <option value="20/3">20/3</option>
+              <option value="20/4">20/4</option>
+              <option value="20/6">20/6</option>
+              <option value="20/9">20/9</option>
+              <option value="30/3">30/3</option>
+              <option value="150/D">150/D</option>
+              <option value="300/D">300/D</option>
+              <option value="60/3">60/3</option>
+            </select>
             <label>QTY:</label>
             <input type="number" id="qty3" min="0" />
           </div>
+          <!-- Row 4 -->
+          <div id="row4" class="count-row" style="display:none;">
+            <label>Count (৪):</label>
+            <select id="countVal4">
+              <option value="">-- নির্বাচন করুন --</option>
+              <option value="50/2">50/2</option>
+              <option value="40/2">40/2</option>
+              <option value="40/3">40/3</option>
+              <option value="20/2">20/2</option>
+              <option value="20/3">20/3</option>
+              <option value="20/4">20/4</option>
+              <option value="20/6">20/6</option>
+              <option value="20/9">20/9</option>
+              <option value="30/3">30/3</option>
+              <option value="150/D">150/D</option>
+              <option value="300/D">300/D</option>
+              <option value="60/3">60/3</option>
+            </select>
+            <label>QTY:</label>
+            <input type="number" id="qty4" min="0" />
+          </div>
         </div>
-
+        
         <label for="remarks">রেমার্কস:</label>
         <textarea id="remarks" name="remarks"></textarea>
         
@@ -290,7 +541,7 @@
     </div>
   </div>
   
-  <!-- Photo Preview Modal with Zoom, Pan & Limited Zoom-Out -->
+  <!-- Photo Preview Modal -->
   <div id="photoModal" class="photo-modal">
     <div class="photo-modal-content">
       <span id="closePhotoModal" class="close-photo">&times;</span>
@@ -303,16 +554,16 @@
   
   <!-- Modify Modal with Nested Action Modal -->
   <div id="modifyModal" class="modal modify-modal">
-    <!-- Modify Modal Content -->
     <div class="modal-content" id="modifyModalContent">
       <span class="close" id="closeModifyModal">&times;</span>
       <h2>মডিফাই</h2>
-      <label for="modifyOrderNo">অর্ডার নং সার্চ করুন:</label>
-      <input type="text" id="modifyOrderNo" placeholder="অর্ডার নং">
+      <label for="orderSearchSelect">অর্ডার নির্বাচন করুন:</label>
+      <!-- Order search dropdown using Select2 -->
+      <select id="orderSearchSelect" style="width:100%"></select>
       <button id="searchOrderBtn">সার্চ করুন</button>
       <div id="modifyResults" style="margin-top:15px;"></div>
     </div>
-    <!-- Nested Action Modal (appears on top of Modify Modal) -->
+    <!-- Nested Action Modal -->
     <div id="actionModal" class="nested-modal">
       <div class="modal-content">
         <span class="close" id="closeActionModal">&times;</span>
@@ -327,14 +578,17 @@
     <p>© Zubair</p>
   </footer>
   
+  <!-- Supabase & Select2 JS (Select2 used only for Order Search) -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
   <script>
-    // Supabase Configuration
-    const SUPABASE_URL = "https://rabjyhlinntzbnbqbmad.supabase.co"; // আপনার Supabase URL
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJhYmp5aGxpbm50emJuYnFibWFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDAzNzg2NDAsImV4cCI6MjA1NTk1NDY0MH0.19NyAvpxbG5czIyLmPiRQ26X3R_Wo_cqTurGIUf3hmQ"; // আপনার ANON KEY
+    // SUPABASE CONFIGURATION
+    const SUPABASE_URL = "https://rabjyhlinntzbnbqbmad.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJhYmp5aGxpbm50emJuYnFibWFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDAzNzg2NDAsImV4cCI6MjA1NTk1NDY0MH0.19NyAvpxbG5czIyLmPiRQ26X3R_Wo_cqTurGIUf3hmQ";
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     
-    // Elements & Variables
+    // Element References
+    const advancedFilterSection = document.getElementById("advancedFilterSection");
     const modal = document.getElementById("dataModal");
     const openModalBtn = document.getElementById("openModalBtn");
     const closeModalBtn = document.querySelector("#dataModal .close");
@@ -349,26 +603,33 @@
     const modalImg = document.getElementById("modalImg");
     const photoSpinner = document.getElementById("photoSpinner");
     const filterDate = document.getElementById("filterDate");
-    const filterMonth = document.getElementById("filterMonth");
-    const filterYear = document.getElementById("filterYear");
     const filterOrderNo = document.getElementById("filterOrderNo");
+    const filterSeedNo = document.getElementById("filterSeedNo");
     const toggleFilterBtn = document.getElementById("toggleFilterBtn");
     let isFilterOpen = false;
-
-    // রেডিও + ডাইনামিক রো
+    
+    // Count Radios & Rows
     const count1Radio = document.getElementById("count1Radio");
     const count2Radio = document.getElementById("count2Radio");
     const count3Radio = document.getElementById("count3Radio");
+    const count4Radio = document.getElementById("count4Radio");
     const row1 = document.getElementById("row1");
     const row2 = document.getElementById("row2");
     const row3 = document.getElementById("row3");
-
+    const row4 = document.getElementById("row4");
+    
+    // Modify Modal & Order Search Select (Select2 used here)
+    const modifyModal = document.getElementById("modifyModal");
+    const modifyBtn = document.getElementById("modifyBtn");
+    const closeModifyModal = document.getElementById("closeModifyModal");
+    const orderSearchSelect = document.getElementById("orderSearchSelect");
+    
     // Advanced Filter Toggle
     toggleFilterBtn.addEventListener("click", () => {
       isFilterOpen = !isFilterOpen;
       advancedFilterSection.classList.toggle("active", isFilterOpen);
     });
-
+    
     // Data Entry Modal Handling
     openModalBtn.addEventListener("click", () => {
       setFormMode("new");
@@ -377,10 +638,10 @@
     closeModalBtn.addEventListener("click", () => { modal.classList.remove("show"); });
     window.addEventListener("click", (e) => { if (e.target === modal) { modal.classList.remove("show"); } });
     
-    // Print Functionality (Only Table)
+    // Print Button
     document.getElementById("printBtn").addEventListener("click", () => { window.print(); });
     
-    // Toast Message Function
+    // Toast Message
     function showToast(message, type="success") {
       const toast = document.createElement("div");
       toast.classList.add("toast");
@@ -391,11 +652,9 @@
       setTimeout(() => { toast.classList.remove("show"); setTimeout(() => { toast.remove(); }, 300); }, 3000);
     }
     
-    // Global Loading Overlay Functions
+    // Loading Functions
     function showLoading() { loadingOverlay.classList.add("show"); }
     function hideLoading() { loadingOverlay.classList.remove("show"); }
-    
-    // Modal Loading Functions
     function showModalLoading() { modalLoading.style.display = "flex"; }
     function hideModalLoading() { modalLoading.style.display = "none"; }
     
@@ -408,17 +667,36 @@
       }
     }
     
-    // রেডিও বাটন চেঞ্জ হলে row দেখানো/লুকানো (display "flex" for inline layout)
+    // Count Radio Change: Show/Hide Rows
     document.querySelectorAll('input[name="countRadio"]').forEach(radio => {
       radio.addEventListener("change", (e) => {
         const val = e.target.value;
         row1.style.display = "none";
         row2.style.display = "none";
         row3.style.display = "none";
+        row4.style.display = "none";
         if(val === "1") { row1.style.display = "flex"; }
         else if(val === "2") { row1.style.display = "flex"; row2.style.display = "flex"; }
         else if(val === "3") { row1.style.display = "flex"; row2.style.display = "flex"; row3.style.display = "flex"; }
+        else if(val === "4") { row1.style.display = "flex"; row2.style.display = "flex"; row3.style.display = "flex"; row4.style.display = "flex"; }
       });
+    });
+    
+    // (Count dropdowns remain as plain <select> elements; no Select2 init for these)
+    
+    // Initialize Select2 for Order Search in Modify Modal
+    function initOrderSearchSelect(options) {
+      $(orderSearchSelect).empty().select2({
+        placeholder: "অর্ডার নির্বাচন করুন",
+        data: options,
+        width: 'resolve',
+        allowClear: true
+      });
+    }
+    
+    // Wrap Order Search Select2 init in document ready (for modify modal only)
+    $(document).ready(function(){
+      // Nothing needed here for count selects since we use plain dropdowns.
     });
     
     // Image Upload Function
@@ -482,6 +760,11 @@
         const q3 = document.getElementById("qty3").value;
         countsData.push({ count: c3, qty: q3 });
       }
+      if(selectedCount >= 4) {
+        const c4 = document.getElementById("countVal4").value;
+        const q4 = document.getElementById("qty4").value;
+        countsData.push({ count: c4, qty: q4 });
+      }
       
       let error;
       if(!idVal) {
@@ -525,12 +808,15 @@
       row1.style.display = "none";
       row2.style.display = "none";
       row3.style.display = "none";
+      row4.style.display = "none";
       document.getElementById("countVal1").value = "";
       document.getElementById("qty1").value = "";
       document.getElementById("countVal2").value = "";
       document.getElementById("qty2").value = "";
       document.getElementById("countVal3").value = "";
       document.getElementById("qty3").value = "";
+      document.getElementById("countVal4").value = "";
+      document.getElementById("qty4").value = "";
     }
     
     function setFormMode(mode, entry=null) {
@@ -556,6 +842,7 @@
           if(length === 1) { count1Radio.checked = true; row1.style.display = "flex"; }
           else if(length === 2) { count2Radio.checked = true; row1.style.display = "flex"; row2.style.display = "flex"; }
           else if(length === 3) { count3Radio.checked = true; row1.style.display = "flex"; row2.style.display = "flex"; row3.style.display = "flex"; }
+          else if(length === 4) { count4Radio.checked = true; row1.style.display = "flex"; row2.style.display = "flex"; row3.style.display = "flex"; row4.style.display = "flex"; }
           if(entry.counts_data[0]) {
             document.getElementById("countVal1").value = entry.counts_data[0].count || "";
             document.getElementById("qty1").value = entry.counts_data[0].qty || "";
@@ -567,6 +854,10 @@
           if(entry.counts_data[2]) {
             document.getElementById("countVal3").value = entry.counts_data[2].count || "";
             document.getElementById("qty3").value = entry.counts_data[2].qty || "";
+          }
+          if(entry.counts_data[3]) {
+            document.getElementById("countVal4").value = entry.counts_data[3].count || "";
+            document.getElementById("qty4").value = entry.counts_data[3].qty || "";
           }
         }
       }
@@ -610,27 +901,24 @@
       if(!skipLoading) showLoading();
       let query = supabaseClient.from('data_entries').select('*').order('id', { ascending: false });
       const dateVal = filterDate.value;
-      const monthVal = filterMonth.value;
-      const yearVal = filterYear.value;
       const orderNoVal = filterOrderNo.value.trim();
-      if (dateVal) {
-        query = query.eq('date', dateVal);
-      } else {
-        if (yearVal) { query = query.ilike('date', `${yearVal}-%`); }
-        if (monthVal) { query = query.ilike('date', `%-${monthVal}-%`); }
-      }
+      const seedNoVal = filterSeedNo.value.trim();
+      if (dateVal) { query = query.eq('date', dateVal); }
       if (orderNoVal) { query = query.ilike('order_no', `%${orderNoVal}%`); }
+      if (seedNoVal) { query = query.ilike('seed_no', `%${seedNoVal}%`); }
       const { data, error } = await query;
       if(!skipLoading) hideLoading();
       if (error) { showToast("ডেটা লোডে সমস্যা: " + error.message, "error"); return; }
       const tbody = document.getElementById("dataTable").querySelector("tbody");
       tbody.innerHTML = "";
+      let overallTotal = 0;
       data.forEach(entry => {
         let formattedDate = formatDate(entry.date);
         let countDisplay = "-";
         if(entry.counts_data && Array.isArray(entry.counts_data) && entry.counts_data.length > 0) {
           const lines = entry.counts_data.map(cd => `${cd.count || '-'} = ${cd.qty || '0'}`);
           const total = entry.counts_data.reduce((sum, cd) => sum + Number(cd.qty || 0), 0);
+          overallTotal += total;
           countDisplay = lines.join("<br>") + "<br>____________<br>টোটাল = " + total;
         }
         const tr = document.createElement("tr");
@@ -646,6 +934,7 @@
         `;
         tbody.appendChild(tr);
       });
+      document.getElementById("overallSubtotal").innerText = overallTotal;
       attachImagePreviewEvents();
     }
     
@@ -731,27 +1020,36 @@
     });
     const debouncedLoadData = debounce((skip) => { loadData(skip); }, 300);
     filterDate.addEventListener("change", () => { loadData(); });
-    filterMonth.addEventListener("change", () => { loadData(); });
-    filterYear.addEventListener("input", () => { loadData(); });
     filterOrderNo.addEventListener("input", () => { debouncedLoadData(true); });
-    window.addEventListener("load", () => { loadData(); });
+    filterSeedNo.addEventListener("input", () => { debouncedLoadData(true); });
+    window.addEventListener("load", () => { 
+      loadData(); 
+    });
     
-    const modifyModal = document.getElementById("modifyModal");
-    const modifyBtn = document.getElementById("modifyBtn");
-    const closeModifyModal = document.getElementById("closeModifyModal");
-    modifyBtn.addEventListener("click", () => { modifyModal.classList.add("show"); });
+    // Modify Modal: Order Search using Select2
+    modifyBtn.addEventListener("click", async () => {
+      modifyModal.classList.add("show");
+      showLoading();
+      // Fetch unique order numbers
+      const { data, error } = await supabaseClient.from('data_entries').select('order_no');
+      hideLoading();
+      if(error) { showToast("অর্ডার লোডে সমস্যা: " + error.message, "error"); return; }
+      const uniqueOrders = [...new Set(data.map(o => o.order_no))];
+      const options = uniqueOrders.map(order => ({ id: order, text: order }));
+      initOrderSearchSelect(options);
+    });
     closeModifyModal.addEventListener("click", () => { modifyModal.classList.remove("show"); });
     window.addEventListener("click", (e) => { if(e.target === modifyModal) { modifyModal.classList.remove("show"); } });
-    document.getElementById("searchOrderBtn").addEventListener("click", searchOrder);
     
-    async function searchOrder() {
-      const orderNo = document.getElementById("modifyOrderNo").value.trim();
-      if(!orderNo) {
-        showToast("অনুগ্রহ করে অর্ডার নং প্রবেশ করুন", "error");
+    // Modify Modal: Search Order Button Click
+    document.getElementById("searchOrderBtn").addEventListener("click", async () => {
+      const selectedOrder = $(orderSearchSelect).val();
+      if(!selectedOrder) {
+        showToast("অনুগ্রহ করে অর্ডার নির্বাচন করুন", "error");
         return;
       }
       showLoading();
-      const { data, error } = await supabaseClient.from('data_entries').select('*').ilike('order_no', `%${orderNo}%`);
+      const { data, error } = await supabaseClient.from('data_entries').select('*').ilike('order_no', `%${selectedOrder}%`);
       hideLoading();
       const resultsDiv = document.getElementById("modifyResults");
       resultsDiv.innerHTML = "";
@@ -764,7 +1062,7 @@
         return;
       }
       let html = '<div style="overflow:auto;"><table style="width:100%; border-collapse:collapse;">';
-      html += '<thead><tr style="background:#4e54c8; color:#fff;">';
+      html += '<thead><tr style="background:#fda085; color:#fff;">';
       html += '<th>তারিখ</th><th>অর্ডার নং</th><th>পার্টি নাম</th><th>সেড নং</th><th>কালার নাম</th><th>কাউন্ট &amp; QTY</th><th>রেমার্কস</th><th>ফটো</th><th>অ্যাকশন</th>';
       html += '</tr></thead><tbody>';
       data.forEach(entry => {
@@ -775,7 +1073,7 @@
           const total = entry.counts_data.reduce((sum, cd) => sum + Number(cd.qty || 0), 0);
           countDisplay = lines.join("<br>") + "<br>____________<br>টোটাল = " + total;
         }
-        html += `<tr style="border:1px solid #ccc; padding:8px;">
+        html += `<tr style="border:1px solid #ddd; padding:8px;">
           <td>${formattedDate}</td>
           <td>${entry.order_no || '-'}</td>
           <td>${entry.party_name || '-'}</td>
@@ -790,7 +1088,7 @@
       html += '</tbody></table></div>';
       resultsDiv.innerHTML = html;
       attachImagePreviewEvents();
-    }
+    });
     
     let currentActionId = null;
     function openNestedActionModal(id) {
