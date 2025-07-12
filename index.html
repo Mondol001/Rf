@@ -8,29 +8,35 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <!-- Select2 CSS (used only for Order Search in Modify Modal) -->
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Select2 CSS -->
   <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-  <!-- jQuery (required for Select2 in Modify Modal) -->
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <style>
     /* Reset & Global Styles */
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Roboto', sans-serif; background: #fdfdfd; color: #333; min-height: 100vh; }
+    body { 
+      font-family: 'Roboto', sans-serif; 
+      background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+      color: #333; 
+      min-height: 100vh;
+    }
     
-    /* Header with Glossy Effect, Menu & Random Logo */
+    /* Header with Glossy Effect */
     header { 
-      background: linear-gradient(135deg, #f6d365, #fda085); 
-      padding: 20px; 
+      background: linear-gradient(135deg, #2c3e50, #3498db); 
+      padding: 15px 20px; 
       color: #fff; 
       text-align: center;
       position: relative;
-      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
     .header-top {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 20px;
+      padding: 0 10px;
       margin-bottom: 10px;
     }
     .logo { 
@@ -38,11 +44,13 @@
       width: 50px;
       border-radius: 50%;
       object-fit: cover;
+      border: 2px solid #fff;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     }
     .menu ul {
       list-style: none;
       display: flex;
-      gap: 15px;
+      gap: 20px;
       margin: 0;
       padding: 0;
     }
@@ -50,175 +58,473 @@
       color: #fff;
       text-decoration: none;
       font-weight: 500;
+      padding: 5px 10px;
+      border-radius: 4px;
+      transition: all 0.3s ease;
     }
-    /* Animated Rainbow Title (Glossy Typer) */
+    .menu ul li a:hover {
+      background: rgba(255,255,255,0.2);
+    }
+    /* Animated Rainbow Title */
     header h1 {
-      font-size: 2em;
-      animation: rainbow 5s infinite;
+      font-size: 2.2em;
+      margin: 10px 0;
+      animation: rainbow 8s infinite;
+      letter-spacing: 1px;
     }
     @keyframes rainbow {
-      0%   { color: red; }
-      14%  { color: orange; }
-      28%  { color: yellow; }
-      42%  { color: green; }
-      57%  { color: blue; }
-      71%  { color: indigo; }
-      85%  { color: violet; }
-      100% { color: red; }
+      0%   { color: #3498db; }
+      20%  { color: #2ecc71; }
+      40%  { color: #f1c40f; }
+      60%  { color: #e74c3c; }
+      80%  { color: #9b59b6; }
+      100% { color: #3498db; }
     }
     
     /* Container */
-    .container { max-width: 1200px; margin: auto; padding: 20px; }
+    .container { 
+      max-width: 1300px; 
+      margin: 20px auto; 
+      padding: 20px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    }
     
     /* Glossy Buttons */
     button { 
-      background: linear-gradient(145deg, #ffcc00, #ff9900);
-      border: 1px solid rgba(255, 255, 255, 0.6);
+      background: linear-gradient(145deg, #3498db, #2980b9);
+      border: none;
       border-radius: 6px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+      box-shadow: 0 3px 6px rgba(0,0,0,0.2);
       color: #fff;
       font-size: 1em;
       padding: 10px 20px;
       cursor: pointer;
       transition: all 0.3s ease;
-      text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
     }
     button:hover {
-      background: linear-gradient(145deg, #ff9900, #ffcc00);
-      box-shadow: 0 6px 10px rgba(0,0,0,0.4);
+      background: linear-gradient(145deg, #2980b9, #3498db);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.25);
+      transform: translateY(-2px);
+    }
+    button i {
+      font-size: 0.9em;
+    }
+    
+    /* Top Controls */
+    .top-controls {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 25px;
+      flex-wrap: wrap;
     }
     
     /* Filter Area */
-    .filter-area { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
-    .filter-area label { font-weight: 500; margin-bottom: 5px; display: block; }
-    .filter-area input, .filter-area select { border: 1px solid #ccc; border-radius: 4px; padding: 6px 10px; }
+    .filter-area { 
+      display: flex; 
+      align-items: center; 
+      gap: 15px; 
+      margin-bottom: 20px; 
+      flex-wrap: wrap;
+      padding: 15px;
+      background: #f8f9fa;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    .filter-area label { 
+      font-weight: 500; 
+      margin-bottom: 5px; 
+      display: block;
+      color: #2c3e50;
+    }
+    .filter-area input, .filter-area select { 
+      border: 1px solid #ddd; 
+      border-radius: 4px; 
+      padding: 8px 12px; 
+      background: #fff;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+      transition: border 0.3s;
+    }
+    .filter-area input:focus, .filter-area select:focus {
+      border-color: #3498db;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+    }
     
-    /* Advanced Filter (Only Date Picker & Seed No) */
-    .advanced-filter-toggle { background: #f6d365; padding: 8px 14px; border-radius: 4px; color: #fff; cursor: pointer; }
+    /* Advanced Filter */
+    .advanced-filter-toggle { 
+      background: #3498db; 
+      padding: 8px 14px; 
+      border-radius: 4px; 
+      color: #fff; 
+      cursor: pointer;
+      margin-top: 25px;
+    }
     .advanced-filter { 
-      background: #fff; padding: 15px; border-radius: 8px; 
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-top: 10px; margin-bottom: 20px; 
-      display: none; flex-wrap: wrap; gap: 10px; 
+      background: #fff; 
+      padding: 20px; 
+      border-radius: 8px; 
+      box-shadow: 0 3px 10px rgba(0,0,0,0.08); 
+      margin-top: 15px; 
+      margin-bottom: 20px; 
+      display: none; 
+      flex-wrap: wrap; 
+      gap: 20px;
+      border: 1px solid #eee;
     }
     .advanced-filter.active { display: flex; }
-    .advanced-filter > div { display: flex; flex-direction: column; }
+    .advanced-filter > div { 
+      display: flex; 
+      flex-direction: column;
+      min-width: 200px;
+    }
     
     /* Modal Styles */
     .modal {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.6);
+      background: rgba(0,0,0,0.7);
       display: flex; justify-content: center; align-items: center;
       opacity: 0; pointer-events: none; transition: opacity 0.3s ease; z-index: 1000;
     }
     .modal.show { opacity: 1; pointer-events: auto; }
     .modal-content {
-      background: #fff; width: 90%; max-width: 500px; border-radius: 8px; padding: 20px;
-      position: relative; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      background: #fff; width: 90%; max-width: 500px; border-radius: 10px; padding: 25px;
+      position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      animation: modalOpen 0.4s ease;
+    }
+    @keyframes modalOpen {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
     /* Make Modals Scrollable */
     #dataModal .modal-content { max-height: 90vh; overflow-y: auto; }
     .modify-modal .modal-content { max-width: 80vw; max-height: 80vh; overflow: auto; }
-    .modal-content h2 { margin-bottom: 15px; text-align: center; }
-    .modal-content .close { position: absolute; top: 10px; right: 10px; font-size: 24px; cursor: pointer; color: #888; }
-    .modal-content .close:hover { color: #333; }
-    .modal-loading { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); display: flex; justify-content: center; align-items: center; z-index: 10; }
+    .modal-content h2 { 
+      margin-bottom: 20px; 
+      text-align: center; 
+      color: #2c3e50;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #3498db;
+    }
+    .modal-content .close { 
+      position: absolute; 
+      top: 15px; 
+      right: 15px; 
+      font-size: 28px; 
+      cursor: pointer; 
+      color: #7f8c8d;
+      transition: color 0.3s;
+    }
+    .modal-content .close:hover { color: #e74c3c; }
+    .modal-loading { 
+      position: absolute; 
+      top: 0; 
+      left: 0; 
+      width: 100%; 
+      height: 100%; 
+      background: rgba(255,255,255,0.9); 
+      display: flex; 
+      justify-content: center; 
+      align-items: center; 
+      z-index: 10;
+      border-radius: 10px;
+    }
     
-    form label { margin-top: 10px; display: block; font-weight: 500; }
-    form input, form textarea, form select { width: 100%; margin-top: 5px; margin-bottom: 10px; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); }
+    /* Form Styles */
+    form label { 
+      margin-top: 15px; 
+      display: block; 
+      font-weight: 500; 
+      color: #2c3e50;
+    }
+    form input, form textarea, form select { 
+      width: 100%; 
+      margin-top: 5px; 
+      margin-bottom: 15px; 
+      padding: 10px; 
+      border: 1px solid #ddd; 
+      border-radius: 6px; 
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.08);
+      font-family: 'Roboto', sans-serif;
+      transition: all 0.3s;
+    }
+    form input:focus, form textarea:focus, form select:focus {
+      border-color: #3498db;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2), inset 0 1px 3px rgba(0,0,0,0.08);
+    }
     
-    /* Datalist Styles (using browser default) */
+    /* Datalist Styles */
+    datalist {
+      display: none;
+    }
     
     /* Photo Input Wrapper */
-    .photo-input-wrapper { display: flex; flex-direction: column; gap: 10px; }
-    .mobile-only { display: none; }
-    @media (max-width: 767px) { .mobile-only { display: block; } }
+    .photo-input-wrapper { 
+      display: flex; 
+      flex-direction: column; 
+      gap: 10px; 
+      margin: 15px 0;
+    }
+    .mobile-only { 
+      display: none; 
+    }
+    @media (max-width: 767px) { 
+      .mobile-only { display: block; } 
+    }
     
     /* Table Styles */
-    .table-container { background: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); overflow: auto; }
-    table { width: 100%; border-collapse: collapse; min-width: 800px; }
-    table thead tr { background: linear-gradient(135deg, #f6d365, #fda085); color: #fff; }
-    table th, table td { padding: 12px 15px; border: 1px solid #ddd; text-align: left; vertical-align: middle; }
-    table tbody tr:nth-child(even) { background: #f9f9f9; }
-    table tbody tr:hover { background: #f1f1f1; }
-    table img { border-radius: 4px; cursor: pointer; }
+    .table-container { 
+      background: #fff; 
+      border-radius: 8px; 
+      box-shadow: 0 3px 10px rgba(0,0,0,0.08); 
+      overflow: auto; 
+      margin-top: 20px;
+      border: 1px solid #eee;
+    }
+    table { 
+      width: 100%; 
+      border-collapse: collapse; 
+      min-width: 900px; 
+    }
+    table thead tr { 
+      background: linear-gradient(135deg, #2c3e50, #3498db); 
+      color: #fff; 
+    }
+    table th, table td { 
+      padding: 14px 16px; 
+      border: 1px solid #e0e0e0; 
+      text-align: left; 
+      vertical-align: middle; 
+    }
+    table th {
+      font-weight: 600;
+    }
+    table tbody tr:nth-child(even) { 
+      background: #f9fafb; 
+    }
+    table tbody tr:hover { 
+      background: #f1f8ff; 
+    }
+    table img { 
+      border-radius: 4px; 
+      cursor: pointer;
+      transition: transform 0.3s;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    table img:hover {
+      transform: scale(1.05);
+    }
     /* Table Footer for Overall Subtotal */
-    table tfoot tr { background: #f6d365; color: #fff; font-weight: bold; }
+    table tfoot tr { 
+      background: #3498db; 
+      color: #fff; 
+      font-weight: bold; 
+    }
+    table tfoot td {
+      font-size: 1.1em;
+    }
     
-    /* Action Icon in Modify Modal's Results */
-    .action-icon { cursor: pointer; font-size: 20px; }
+    /* Action Icon */
+    .action-icon { 
+      cursor: pointer; 
+      font-size: 20px; 
+      color: #3498db;
+      transition: color 0.3s;
+    }
+    .action-icon:hover {
+      color: #2980b9;
+    }
     
     /* Nested Action Modal */
     .nested-modal {
       position: absolute; top: 10%; left: 50%; transform: translateX(-50%);
       z-index: 1100; display: none;
+      animation: modalOpen 0.3s ease;
     }
     .nested-modal.show { display: block; }
     
     /* Global Loading Overlay */
     .loading-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(255,255,255,0.7);
+      background: rgba(255,255,255,0.85);
       display: flex; justify-content: center; align-items: center;
       z-index: 999; opacity: 0; pointer-events: none; transition: opacity 0.2s ease;
     }
     .loading-overlay.show { opacity: 1; pointer-events: auto; }
-    .spinner { width: 40px; height: 40px; border: 4px solid #ccc; border-top: 4px solid #fda085; border-radius: 50%; animation: spin 0.8s linear infinite; }
-    @keyframes spin { 100% { transform: rotate(360deg); } }
+    .spinner { 
+      width: 50px; 
+      height: 50px; 
+      border: 5px solid rgba(52, 152, 219, 0.2); 
+      border-top: 5px solid #3498db; 
+      border-radius: 50%; 
+      animation: spin 0.8s linear infinite; 
+    }
+    @keyframes spin { 
+      100% { transform: rotate(360deg); } 
+    }
     
-    /* Photo Modal with Zoom & Pan */
+    /* Photo Modal */
     .photo-modal { 
       position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-      background: rgba(0,0,0,0.7); display: flex; justify-content: center; align-items: center; 
+      background: rgba(0,0,0,0.9); display: flex; justify-content: center; align-items: center; 
       opacity: 0; pointer-events: none; transition: opacity 0.3s ease; z-index: 2000; 
     }
     .photo-modal.show { opacity: 1; pointer-events: auto; }
-    .photo-modal-content { position: relative; max-width: 90%; max-height: 90%; }
-    .photo-modal-content img { width: 100%; height: auto; border-radius: 4px; display: block; transition: transform 0.2s ease; }
-    .photo-modal .close-photo { position: absolute; top: -40px; right: 0; color: #fff; font-size: 30px; cursor: pointer; }
-    #photoSpinner { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: none; }
+    .photo-modal-content { 
+      position: relative; 
+      max-width: 90%; 
+      max-height: 90%; 
+      background: #000;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .photo-modal-content img { 
+      width: 100%; 
+      height: auto; 
+      display: block; 
+      transition: transform 0.2s ease;
+      cursor: move;
+    }
+    .photo-modal .close-photo { 
+      position: absolute; 
+      top: 15px; 
+      right: 15px; 
+      color: #fff; 
+      font-size: 30px; 
+      cursor: pointer; 
+      background: rgba(0,0,0,0.5);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+    }
+    #photoSpinner { 
+      position: absolute; 
+      top: 50%; 
+      left: 50%; 
+      transform: translate(-50%, -50%); 
+      display: none; 
+    }
     
     /* Footer */
-    footer { text-align: center; padding: 10px; background: #333; color: #fff; margin-top: 20px; }
+    footer { 
+      text-align: center; 
+      padding: 20px; 
+      background: #2c3e50; 
+      color: #fff; 
+      margin-top: 30px;
+      font-size: 0.9em;
+    }
     
     /* Toast Message */
     .toast { 
-      position: fixed; top: 10px; right: 10px; background: #fda085; 
-      color: #fff; padding: 10px 15px; border-radius: 4px; box-shadow: 0 2px 6px rgba(0,0,0,0.2); 
-      opacity: 0; transform: translateY(-20px); transition: opacity 0.3s, transform 0.3s; 
-      z-index: 3000; pointer-events: none; 
+      position: fixed; 
+      top: 20px; 
+      right: 20px; 
+      background: #3498db; 
+      color: #fff; 
+      padding: 15px 20px; 
+      border-radius: 6px; 
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2); 
+      opacity: 0; 
+      transform: translateY(-30px); 
+      transition: opacity 0.3s, transform 0.3s; 
+      z-index: 3000; 
+      pointer-events: none; 
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      max-width: 350px;
     }
     .toast.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
-    .toast.error { background: #d9534f; }
+    .toast.error { background: #e74c3c; }
+    .toast.success { background: #2ecc71; }
     
     /* Count & QTY Input Row */
     .count-row {
       display: flex;
       align-items: center;
-      gap: 10px;
-      margin-bottom: 5px;
+      gap: 15px;
+      margin-bottom: 10px;
+      padding: 10px;
+      background: #f8f9fa;
+      border-radius: 6px;
     }
     .count-row label {
       font-weight: 500;
       margin-bottom: 0;
       white-space: nowrap;
+      color: #2c3e50;
+      min-width: 70px;
     }
     .count-row select,
     .count-row input[type="number"] {
-      width: 80px;
-      padding: 4px;
+      width: 100px;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    
+    /* Radio Group */
+    .count-radio-group {
+      margin-top: 15px; 
+      display: flex; 
+      align-items: center; 
+      gap: 20px;
+      padding: 12px;
+      background: #f8f9fa;
+      border-radius: 6px;
+    }
+    .count-radio-group span {
+      font-weight: 500;
+      color: #2c3e50;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .top-controls {
+        flex-direction: column;
+      }
+      .filter-area {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .advanced-filter {
+        flex-direction: column;
+        gap: 15px;
+      }
+      .count-radio-group {
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+      .count-row {
+        flex-wrap: wrap;
+      }
+      .modal-content {
+        width: 95%;
+        padding: 15px;
+      }
     }
   </style>
 </head>
 <body>
-  <!-- Header with Random Logo & Animated Glossy Title -->
+  <!-- Header with Random Logo & Animated Title -->
   <header>
     <div class="header-top">
-      <img src="https://picsum.photos/50" alt="Logo" class="logo">
+      <img src="https://picsum.photos/50?grayscale" alt="Logo" class="logo">
       <nav class="menu">
         <ul>
-          <li><a href="#">হোম</a></li>
-          <li><a href="#">সেবা</a></li>
-          <li><a href="#">যোগাযোগ</a></li>
+          <li><a href="#"><i class="fas fa-home"></i> হোম</a></li>
+          <li><a href="#"><i class="fas fa-cogs"></i> সেবা</a></li>
+          <li><a href="#"><i class="fas fa-phone"></i> যোগাযোগ</a></li>
         </ul>
       </nav>
     </div>
@@ -233,21 +539,26 @@
   <div class="container">
     <!-- Top Controls -->
     <div class="top-controls">
-      <button id="openModalBtn">ডেটা এন্ট্রি করুন</button>
-      <button id="modifyBtn">মডিফাই করুন</button>
-      <button id="printBtn">প্রিন্ট করুন</button>
+      <button id="openModalBtn"><i class="fas fa-plus-circle"></i> ডেটা এন্ট্রি করুন</button>
+      <button id="modifyBtn"><i class="fas fa-edit"></i> মডিফাই করুন</button>
+      <button id="printBtn"><i class="fas fa-print"></i> প্রিন্ট করুন</button>
+      <button id="refreshBtn"><i class="fas fa-sync"></i> রিফ্রেশ</button>
     </div>
+    
     <!-- Filter Area -->
     <div class="filter-area">
-      <div>
+      <div style="flex: 1;">
         <label for="filterOrderNo">অর্ডার নং</label>
-        <input type="text" id="filterOrderNo" placeholder="অর্ডার নং">
+        <input type="text" id="filterOrderNo" placeholder="অর্ডার নং অনুসন্ধান করুন">
       </div>
       <div>
-        <button class="advanced-filter-toggle" id="toggleFilterBtn">অ্যাডভান্সড ফিল্টার</button>
+        <button class="advanced-filter-toggle" id="toggleFilterBtn">
+          <i class="fas fa-filter"></i> অ্যাডভান্সড ফিল্টার
+        </button>
       </div>
     </div>
-    <!-- Advanced Filter (Only Date Picker & Seed No) -->
+    
+    <!-- Advanced Filter -->
     <div class="advanced-filter" id="advancedFilterSection">
       <div>
         <label for="filterDate">তারিখ</label>
@@ -255,10 +566,35 @@
       </div>
       <div>
         <label for="filterSeedNo">সেড নং</label>
-        <input type="text" id="filterSeedNo" placeholder="সেড নং">
+        <input type="text" id="filterSeedNo" placeholder="সেড নং অনুসন্ধান করুন">
+      </div>
+      <div>
+        <label for="filterPartyName">পার্টি নাম</label>
+        <input type="text" id="filterPartyName" placeholder="পার্টি নাম অনুসন্ধান করুন">
+      </div>
+      <div>
+        <label for="filterColor">কালার নাম</label>
+        <input type="text" id="filterColor" placeholder="কালার নাম অনুসন্ধান করুন">
       </div>
     </div>
-    <!-- Main Data Table with Overall Subtotal Footer -->
+    
+    <!-- Stats Summary -->
+    <div class="stats-summary" style="display: flex; gap: 15px; margin: 20px 0; flex-wrap: wrap;">
+      <div style="background: #e3f2fd; padding: 15px; border-radius: 8px; flex: 1; min-width: 200px;">
+        <h3 style="color: #0d47a1; margin-bottom: 10px;">মোট এন্ট্রি</h3>
+        <p style="font-size: 1.8em; font-weight: bold; color: #1976d2;" id="totalEntries">0</p>
+      </div>
+      <div style="background: #e8f5e9; padding: 15px; border-radius: 8px; flex: 1; min-width: 200px;">
+        <h3 style="color: #1b5e20; margin-bottom: 10px;">মোট QTY</h3>
+        <p style="font-size: 1.8em; font-weight: bold; color: #388e3c;" id="totalQty">0</p>
+      </div>
+      <div style="background: #fff8e1; padding: 15px; border-radius: 8px; flex: 1; min-width: 200px;">
+        <h3 style="color: #e65100; margin-bottom: 10px;">সর্বশেষ আপডেট</h3>
+        <p style="font-size: 1.1em; color: #f57c00;" id="lastUpdate">-</p>
+      </div>
+    </div>
+    
+    <!-- Main Data Table -->
     <div class="table-container">
       <table id="dataTable">
         <thead>
@@ -271,16 +607,18 @@
             <th>কাউন্ট &amp; QTY</th>
             <th>রেমার্কস</th>
             <th>ফটো</th>
+            <th>অ্যাকশন</th>
           </tr>
         </thead>
         <tbody>
           <!-- Data will be loaded here dynamically -->
+          <tr><td colspan="9" style="text-align:center; padding:30px;">লোড হচ্ছে...</td></tr>
         </tbody>
         <tfoot>
           <tr>
-            <td colspan="5" style="text-align:right;">সর্বমোট:</td>
+            <td colspan="5" style="text-align:right;">সর্বমোট QTY:</td>
             <td id="overallSubtotal">0</td>
-            <td colspan="2"></td>
+            <td colspan="3"></td>
           </tr>
         </tfoot>
       </table>
@@ -294,18 +632,20 @@
       <div id="modalLoading" class="modal-loading" style="display:none;">
         <div class="spinner"></div>
       </div>
-      <h2 id="modalTitle">ডেটা এন্ট্রি ফর্ম</h2>
+      <h2 id="modalTitle"><i class="fas fa-database"></i> ডেটা এন্ট্রি ফর্ম</h2>
       <form id="entryForm">
         <input type="hidden" id="entryId" name="entryId" value="">
         
-        <label for="date">তারিখ:</label>
+        <label for="date"><i class="far fa-calendar-alt"></i> তারিখ:</label>
         <input type="date" id="date" name="date" required>
         
-        <label for="orderNo">অর্ডার নং:</label>
+        <label for="orderNo"><i class="fas fa-hashtag"></i> অর্ডার নং:</label>
         <input type="text" id="orderNo" name="orderNo" required>
         
-        <!-- Party Name with datalist suggestions -->
-        <label for="partyName">পার্টি নাম:</label>
+        <label for="seedNo"><i class="fas fa-seedling"></i> সেড নং:</label>
+        <input type="text" id="seedNo" name="seedNo" placeholder="সেড নং">
+        
+        <label for="partyName"><i class="fas fa-building"></i> পার্টি নাম:</label>
         <input type="text" id="partyName" name="partyName" list="partyNames" required>
         <datalist id="partyNames">
           <option value="DELUXE APPARELS LTD.">
@@ -401,7 +741,7 @@
           <option value="VERSATILE APPAREL PVT LTD.">
           <option value="MOMO FASHIONS LTD.">
           <option value="IMPRESSION DESIGN">
-          <option value="PLATINUM APPAREL MANUFACTURING COMPANY LTD.">
+          <option value="PLATINUM APPAREL MANUFACTURER">
           <option value="FASHION EXPORT INTERNATIONAL LTD.">
           <option value="TARASIMA APPARELS LIMITED">
           <option value="PATRIOT ECO APPARELS LTD">
@@ -418,11 +758,11 @@
           <option value="DIPS APPAREL LTD.">
         </datalist>
         
-        <label for="colorName">কালার নাম:</label>
+        <label for="colorName"><i class="fas fa-palette"></i> কালার নাম:</label>
         <input type="text" id="colorName" name="colorName" required>
         
-        <!-- Count Radio Buttons (১, ২, ৩, ৪ কাউন্ট) -->
-        <div class="count-radio-group" style="margin-top:10px; display:flex; align-items:center; gap:20px;">
+        <!-- Count Radio Buttons -->
+        <div class="count-radio-group">
           <span>কাউন্ট কতটি নির্বাচন করবেন?</span>
           <label for="count1Radio">
             <input type="radio" name="countRadio" value="1" id="count1Radio"> ১ কাউন্ট
@@ -438,9 +778,8 @@
           </label>
         </div>
         
-        <!-- Dynamic Count Rows with Plain Dropdowns -->
-        <div id="countRows" style="margin:10px 0;">
-          <!-- Row 1 -->
+        <!-- Dynamic Count Rows -->
+        <div id="countRows" style="margin:15px 0;">
           <div id="row1" class="count-row" style="display:none;">
             <label>Count (১):</label>
             <select id="countVal1">
@@ -459,9 +798,8 @@
               <option value="60/3">60/3</option>
             </select>
             <label>QTY:</label>
-            <input type="number" id="qty1" min="0" />
+            <input type="number" id="qty1" min="0" placeholder="পরিমাণ" />
           </div>
-          <!-- Row 2 -->
           <div id="row2" class="count-row" style="display:none;">
             <label>Count (২):</label>
             <select id="countVal2">
@@ -480,9 +818,8 @@
               <option value="60/3">60/3</option>
             </select>
             <label>QTY:</label>
-            <input type="number" id="qty2" min="0" />
+            <input type="number" id="qty2" min="0" placeholder="পরিমাণ" />
           </div>
-          <!-- Row 3 -->
           <div id="row3" class="count-row" style="display:none;">
             <label>Count (৩):</label>
             <select id="countVal3">
@@ -501,9 +838,8 @@
               <option value="60/3">60/3</option>
             </select>
             <label>QTY:</label>
-            <input type="number" id="qty3" min="0" />
+            <input type="number" id="qty3" min="0" placeholder="পরিমাণ" />
           </div>
-          <!-- Row 4 -->
           <div id="row4" class="count-row" style="display:none;">
             <label>Count (৪):</label>
             <select id="countVal4">
@@ -522,23 +858,27 @@
               <option value="60/3">60/3</option>
             </select>
             <label>QTY:</label>
-            <input type="number" id="qty4" min="0" />
+            <input type="number" id="qty4" min="0" placeholder="পরিমাণ" />
           </div>
         </div>
         
-        <label for="remarks">রেমার্কস:</label>
-        <textarea id="remarks" name="remarks"></textarea>
+        <label for="remarks"><i class="fas fa-comment"></i> রেমার্কস:</label>
+        <textarea id="remarks" name="remarks" rows="3" placeholder="যেকোনো অতিরিক্ত মন্তব্য..."></textarea>
         
-        <!-- Photo Input Wrapper -->
+        <!-- Photo Input -->
         <div class="photo-input-wrapper">
           <div class="mobile-only">
-            <button type="button" id="cameraBtn" title="ক্যামেরা থেকে ছবি তুলুন">📷</button>
+            <button type="button" id="cameraBtn" title="ক্যামেরা থেকে ছবি তুলুন">
+              <i class="fas fa-camera"></i> ক্যামেরা
+            </button>
             <input type="file" id="photoCamera" name="photoCamera" accept="image/*" capture="environment" style="display: none;">
           </div>
-          <label for="photoFile">ফটো (ফাইল নির্বাচন):</label>
+          <label for="photoFile"><i class="fas fa-image"></i> ফটো (ফাইল নির্বাচন):</label>
           <input type="file" id="photoFile" name="photoFile" accept="image/*">
         </div>
-        <button type="submit" id="submitBtn">সেভ করুন</button>
+        <button type="submit" id="submitBtn" style="margin-top: 15px;">
+          <i class="fas fa-save"></i> সেভ করুন
+        </button>
       </form>
     </div>
   </div>
@@ -554,39 +894,33 @@
     </div>
   </div>
   
-  <!-- Modify Modal with Nested Action Modal -->
+  <!-- Modify Modal -->
   <div id="modifyModal" class="modal modify-modal">
     <div class="modal-content" id="modifyModalContent">
       <span class="close" id="closeModifyModal">&times;</span>
-      <h2>মডিফাই</h2>
+      <h2><i class="fas fa-edit"></i> মডিফাই</h2>
       <label for="orderSearchSelect">অর্ডার নির্বাচন করুন:</label>
-      <!-- Order search dropdown using Select2 -->
       <select id="orderSearchSelect" style="width:100%"></select>
-      <button id="searchOrderBtn">সার্চ করুন</button>
-      <div id="modifyResults" style="margin-top:15px;"></div>
-    </div>
-    <!-- Nested Action Modal -->
-    <div id="actionModal" class="nested-modal">
-      <div class="modal-content">
-        <span class="close" id="closeActionModal">&times;</span>
-        <h2>অ্যাকশন নির্বাচন করুন</h2>
-        <button id="actionEditBtn">এডিট</button>
-        <button id="actionDeleteBtn" style="background:#d9534f">ডিলেট</button>
-      </div>
+      <button id="searchOrderBtn" style="margin-top: 15px;">
+        <i class="fas fa-search"></i> সার্চ করুন
+      </button>
+      <div id="modifyResults" style="margin-top:20px;"></div>
     </div>
   </div>
   
   <footer>
-    <p>© Zubair</p>
+    <p>© 2023 Zubair Works Space - সর্বস্বত্ব সংরক্ষিত</p>
   </footer>
   
-  <!-- Supabase & Select2 JS (Select2 used only for Order Search) -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <!-- jQuery & Select2 JS -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+  <!-- Supabase JS -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   <script>
     // SUPABASE CONFIGURATION
-    const SUPABASE_URL = "https://rabjyhlinntzbnbqbmad.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJhYmp5aGxpbm50emJuYnFibWFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDAzNzg2NDAsImV4cCI6MjA1NTk1NDY0MH0.19NyAvpxbG5czIyLmPiRQ26X3R_Wo_cqTurGIUf3hmQ";
+    const SUPABASE_URL = "https://ebnktykkwsktbeyooqfr.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVibmt0eWtrd3NrdGJleW9vcWZyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIzNDAxNTgsImV4cCI6MjA2NzkxNjE1OH0.trdyRL6Z9_pZLMVI_gfjrkjXNV5mPWieKZfSbD-O19U";
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     
     // Element References
@@ -607,7 +941,10 @@
     const filterDate = document.getElementById("filterDate");
     const filterOrderNo = document.getElementById("filterOrderNo");
     const filterSeedNo = document.getElementById("filterSeedNo");
+    const filterPartyName = document.getElementById("filterPartyName");
+    const filterColor = document.getElementById("filterColor");
     const toggleFilterBtn = document.getElementById("toggleFilterBtn");
+    const refreshBtn = document.getElementById("refreshBtn");
     let isFilterOpen = false;
     
     // Count Radios & Rows
@@ -620,35 +957,126 @@
     const row3 = document.getElementById("row3");
     const row4 = document.getElementById("row4");
     
-    // Modify Modal & Order Search Select (Select2 used here)
+    // Modify Modal
     const modifyModal = document.getElementById("modifyModal");
     const modifyBtn = document.getElementById("modifyBtn");
     const closeModifyModal = document.getElementById("closeModifyModal");
     const orderSearchSelect = document.getElementById("orderSearchSelect");
     
-    // Advanced Filter Toggle
-    toggleFilterBtn.addEventListener("click", () => {
-      isFilterOpen = !isFilterOpen;
-      advancedFilterSection.classList.toggle("active", isFilterOpen);
+    // Initialize the application
+    document.addEventListener('DOMContentLoaded', () => {
+      loadData();
+      initEventListeners();
     });
+
+    function initEventListeners() {
+      // Advanced Filter Toggle
+      toggleFilterBtn.addEventListener("click", () => {
+        isFilterOpen = !isFilterOpen;
+        advancedFilterSection.classList.toggle("active", isFilterOpen);
+      });
+      
+      // Data Entry Modal Handling
+      openModalBtn.addEventListener("click", () => {
+        setFormMode("new");
+        modal.classList.add("show");
+      });
+      closeModalBtn.addEventListener("click", () => { modal.classList.remove("show"); });
+      window.addEventListener("click", (e) => { if (e.target === modal) { modal.classList.remove("show"); } });
+      
+      // Print Button
+      document.getElementById("printBtn").addEventListener("click", () => { window.print(); });
+      
+      // Refresh Button
+      refreshBtn.addEventListener("click", () => {
+        filterDate.value = "";
+        filterOrderNo.value = "";
+        filterSeedNo.value = "";
+        filterPartyName.value = "";
+        filterColor.value = "";
+        loadData();
+      });
+      
+      // Count Radio Change: Show/Hide Rows
+      document.querySelectorAll('input[name="countRadio"]').forEach(radio => {
+        radio.addEventListener("change", (e) => {
+          const val = e.target.value;
+          row1.style.display = "none";
+          row2.style.display = "none";
+          row3.style.display = "none";
+          row4.style.display = "none";
+          if(val === "1") { row1.style.display = "flex"; }
+          else if(val === "2") { row1.style.display = "flex"; row2.style.display = "flex"; }
+          else if(val === "3") { row1.style.display = "flex"; row2.style.display = "flex"; row3.style.display = "flex"; }
+          else if(val === "4") { 
+            row1.style.display = "flex"; 
+            row2.style.display = "flex"; 
+            row3.style.display = "flex"; 
+            row4.style.display = "flex"; 
+          }
+        });
+      });
+      
+      // Camera Button
+      document.getElementById("cameraBtn").addEventListener("click", () => {
+        document.getElementById("photoCamera").click();
+      });
+      
+      // Photo Modal Close
+      closePhotoModal.addEventListener("click", (e) => {
+        e.stopPropagation();
+        photoModal.classList.remove("show");
+      });
+      
+      // Filters
+      filterDate.addEventListener("change", () => { loadData(); });
+      filterOrderNo.addEventListener("input", () => { debounceLoadData(); });
+      filterSeedNo.addEventListener("input", () => { debounceLoadData(); });
+      filterPartyName.addEventListener("input", () => { debounceLoadData(); });
+      filterColor.addEventListener("input", () => { debounceLoadData(); });
+      
+      // Modify Modal
+      modifyBtn.addEventListener("click", async () => {
+        modifyModal.classList.add("show");
+        showLoading();
+        // Fetch unique order numbers
+        const { data, error } = await supabaseClient.from('data_entries').select('order_no');
+        hideLoading();
+        if(error) { showToast("অর্ডার লোডে সমস্যা: " + error.message, "error"); return; }
+        const uniqueOrders = [...new Set(data.map(o => o.order_no))];
+        const options = uniqueOrders.map(order => ({ id: order, text: order }));
+        initOrderSearchSelect(options);
+      });
+      closeModifyModal.addEventListener("click", () => { modifyModal.classList.remove("show"); });
+      window.addEventListener("click", (e) => { if(e.target === modifyModal) { modifyModal.classList.remove("show"); } });
+      
+      // Search Order Button
+      document.getElementById("searchOrderBtn").addEventListener("click", searchOrderHandler);
+      
+      // Form Submission
+      entryForm.addEventListener("submit", handleFormSubmit);
+    }
     
-    // Data Entry Modal Handling
-    openModalBtn.addEventListener("click", () => {
-      setFormMode("new");
-      modal.classList.add("show");
-    });
-    closeModalBtn.addEventListener("click", () => { modal.classList.remove("show"); });
-    window.addEventListener("click", (e) => { if (e.target === modal) { modal.classList.remove("show"); } });
-    
-    // Print Button
-    document.getElementById("printBtn").addEventListener("click", () => { window.print(); });
+    // Initialize Select2 for Order Search in Modify Modal
+    function initOrderSearchSelect(options) {
+      $(orderSearchSelect).empty().select2({
+        placeholder: "অর্ডার নির্বাচন করুন",
+        data: options,
+        width: 'resolve',
+        allowClear: true
+      });
+    }
     
     // Toast Message
     function showToast(message, type="success") {
       const toast = document.createElement("div");
       toast.classList.add("toast");
-      if(type === "error") { toast.classList.add("error"); }
-      toast.innerText = message;
+      toast.classList.add(type);
+      
+      let icon = '<i class="fas fa-check-circle"></i>';
+      if (type === "error") icon = '<i class="fas fa-exclamation-circle"></i>';
+      
+      toast.innerHTML = `${icon} ${message}`;
       document.body.appendChild(toast);
       setTimeout(() => { toast.classList.add("show"); }, 100);
       setTimeout(() => { toast.classList.remove("show"); setTimeout(() => { toast.remove(); }, 300); }, 3000);
@@ -661,7 +1089,7 @@
     function hideModalLoading() { modalLoading.style.display = "none"; }
     
     // Debounce Function
-    function debounce(func, delay) {
+    function debounce(func, delay = 300) {
       let timeout;
       return function(...args) {
         clearTimeout(timeout);
@@ -669,32 +1097,7 @@
       }
     }
     
-    // Count Radio Change: Show/Hide Rows
-    document.querySelectorAll('input[name="countRadio"]').forEach(radio => {
-      radio.addEventListener("change", (e) => {
-        const val = e.target.value;
-        row1.style.display = "none";
-        row2.style.display = "none";
-        row3.style.display = "none";
-        row4.style.display = "none";
-        if(val === "1") { row1.style.display = "flex"; }
-        else if(val === "2") { row1.style.display = "flex"; row2.style.display = "flex"; }
-        else if(val === "3") { row1.style.display = "flex"; row2.style.display = "flex"; row3.style.display = "flex"; }
-        else if(val === "4") { row1.style.display = "flex"; row2.style.display = "flex"; row3.style.display = "flex"; row4.style.display = "flex"; }
-      });
-    });
-    
-    // (Count dropdowns remain as plain <select> elements; no Select2 init for these)
-    
-    // Initialize Select2 for Order Search in Modify Modal
-    function initOrderSearchSelect(options) {
-      $(orderSearchSelect).empty().select2({
-        placeholder: "অর্ডার নির্বাচন করুন",
-        data: options,
-        width: 'resolve',
-        allowClear: true
-      });
-    }
+    const debounceLoadData = debounce(() => { loadData(); });
     
     // Image Upload Function
     async function uploadImage(file) {
@@ -712,8 +1115,8 @@
       }
     }
     
-    // Form Submission (Insert or Update)
-    entryForm.addEventListener("submit", async (e) => {
+    // Form Submission Handler
+    async function handleFormSubmit(e) {
       e.preventDefault();
       showModalLoading();
       const idVal = entryIdField.value;
@@ -745,22 +1148,28 @@
       if(selectedCount >= 1) {
         const c1 = document.getElementById("countVal1").value;
         const q1 = document.getElementById("qty1").value;
-        countsData.push({ count: c1, qty: q1 });
+        if(c1 && q1) countsData.push({ count: c1, qty: q1 });
       }
       if(selectedCount >= 2) {
         const c2 = document.getElementById("countVal2").value;
         const q2 = document.getElementById("qty2").value;
-        countsData.push({ count: c2, qty: q2 });
+        if(c2 && q2) countsData.push({ count: c2, qty: q2 });
       }
       if(selectedCount >= 3) {
         const c3 = document.getElementById("countVal3").value;
         const q3 = document.getElementById("qty3").value;
-        countsData.push({ count: c3, qty: q3 });
+        if(c3 && q3) countsData.push({ count: c3, qty: q3 });
       }
       if(selectedCount >= 4) {
         const c4 = document.getElementById("countVal4").value;
         const q4 = document.getElementById("qty4").value;
-        countsData.push({ count: c4, qty: q4 });
+        if(c4 && q4) countsData.push({ count: c4, qty: q4 });
+      }
+      
+      if(countsData.length === 0) {
+        hideModalLoading();
+        showToast("অন্তত একটি কাউন্ট এবং QTY প্রদান করুন", "error");
+        return;
       }
       
       let error;
@@ -798,7 +1207,7 @@
         resetCountRows();
         loadData();
       }
-    });
+    }
     
     function resetCountRows() {
       document.querySelectorAll('input[name="countRadio"]').forEach(r => r.checked = false);
@@ -818,28 +1227,29 @@
     
     function setFormMode(mode, entry=null) {
       if(mode === "new") {
-        modalTitle.innerText = "ডেটা এন্ট্রি ফর্ম";
-        submitBtn.innerText = "সেভ করুন";
+        modalTitle.innerHTML = '<i class="fas fa-database"></i> ডেটা এন্ট্রি ফর্ম';
+        submitBtn.innerHTML = '<i class="fas fa-save"></i> সেভ করুন';
         entryIdField.value = "";
         entryForm.reset();
         resetCountRows();
       } else if(mode === "edit" && entry) {
-        modalTitle.innerText = "ডেটা এডিট ফর্ম";
-        submitBtn.innerText = "আপডেট করুন";
+        modalTitle.innerHTML = '<i class="fas fa-edit"></i> ডেটা এডিট ফর্ম';
+        submitBtn.innerHTML = '<i class="fas fa-sync"></i> আপডেট করুন';
         entryIdField.value = entry.id || "";
         document.getElementById("date").value = entry.date || "";
         document.getElementById("orderNo").value = entry.order_no || "";
-        document.getElementById("partyName").value = entry.party_name || "";
         document.getElementById("seedNo").value = entry.seed_no || "";
+        document.getElementById("partyName").value = entry.party_name || "";
         document.getElementById("colorName").value = entry.color_name || "";
         document.getElementById("remarks").value = entry.remarks || "";
         resetCountRows();
         if(entry.counts_data && Array.isArray(entry.counts_data)) {
           let length = entry.counts_data.length;
-          if(length === 1) { count1Radio.checked = true; row1.style.display = "flex"; }
-          else if(length === 2) { count2Radio.checked = true; row1.style.display = "flex"; row2.style.display = "flex"; }
-          else if(length === 3) { count3Radio.checked = true; row1.style.display = "flex"; row2.style.display = "flex"; row3.style.display = "flex"; }
-          else if(length === 4) { count4Radio.checked = true; row1.style.display = "flex"; row2.style.display = "flex"; row3.style.display = "flex"; row4.style.display = "flex"; }
+          if(length >= 1) { count1Radio.checked = true; row1.style.display = "flex"; }
+          if(length >= 2) { count2Radio.checked = true; row2.style.display = "flex"; }
+          if(length >= 3) { count3Radio.checked = true; row3.style.display = "flex"; }
+          if(length >= 4) { count4Radio.checked = true; row4.style.display = "flex"; }
+          
           if(entry.counts_data[0]) {
             document.getElementById("countVal1").value = entry.counts_data[0].count || "";
             document.getElementById("qty1").value = entry.counts_data[0].qty || "";
@@ -871,6 +1281,7 @@
       setFormMode("edit", data);
       modal.classList.add("show");
     }
+    
     async function deleteEntry(id) {
       const sure = confirm("আপনি কি নিশ্চিতভাবে ডিলিট করতে চান?");
       if(!sure) return;
@@ -886,160 +1297,17 @@
     }
     
     function formatDate(dateStr) {
+      if (!dateStr) return '-';
       let date = new Date(dateStr);
       if(isNaN(date)) return '-';
-      let day = date.getDate();
-      let month = date.getMonth() + 1;
+      let day = date.getDate().toString().padStart(2, '0');
+      let month = (date.getMonth() + 1).toString().padStart(2, '0');
       let year = date.getFullYear();
-      return (day < 10 ? "0" + day : day) + "-" + (month < 10 ? "0" + month : month) + "-" + year;
+      return `${day}-${month}-${year}`;
     }
     
-    async function loadData(skipLoading = false) {
-      if(!skipLoading) showLoading();
-      let query = supabaseClient.from('data_entries').select('*').order('id', { ascending: false });
-      const dateVal = filterDate.value;
-      const orderNoVal = filterOrderNo.value.trim();
-      const seedNoVal = filterSeedNo.value.trim();
-      if (dateVal) { query = query.eq('date', dateVal); }
-      if (orderNoVal) { query = query.ilike('order_no', `%${orderNoVal}%`); }
-      if (seedNoVal) { query = query.ilike('seed_no', `%${seedNoVal}%`); }
-      const { data, error } = await query;
-      if(!skipLoading) hideLoading();
-      if (error) { showToast("ডেটা লোডে সমস্যা: " + error.message, "error"); return; }
-      const tbody = document.getElementById("dataTable").querySelector("tbody");
-      tbody.innerHTML = "";
-      let overallTotal = 0;
-      data.forEach(entry => {
-        let formattedDate = formatDate(entry.date);
-        let countDisplay = "-";
-        if(entry.counts_data && Array.isArray(entry.counts_data) && entry.counts_data.length > 0) {
-          const lines = entry.counts_data.map(cd => `${cd.count || '-'} = ${cd.qty || '0'}`);
-          const total = entry.counts_data.reduce((sum, cd) => sum + Number(cd.qty || 0), 0);
-          overallTotal += total;
-          countDisplay = lines.join("<br>") + "<br>____________<br>টোটাল = " + total;
-        }
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${formattedDate}</td>
-          <td>${entry.order_no || '-'}</td>
-          <td>${entry.party_name || '-'}</td>
-          <td>${entry.seed_no || '-'}</td>
-          <td>${entry.color_name || '-'}</td>
-          <td>${countDisplay}</td>
-          <td>${entry.remarks || '-'}</td>
-          <td>${ entry.photo_url ? `<img src="${entry.photo_url}" width="50" alt="ফটো" class="preview-img">` : '-' }</td>
-        `;
-        tbody.appendChild(tr);
-      });
-      document.getElementById("overallSubtotal").innerText = overallTotal;
-      attachImagePreviewEvents();
-    }
-    
-    let currentScale = 1, translateX = 0, translateY = 0;
-    let isDragging = false, dragStartX = 0, dragStartY = 0;
-    function resetTransform() {
-      currentScale = 1;
-      translateX = 0;
-      translateY = 0;
-      modalImg.style.transform = "translate(0px, 0px) scale(1)";
-    }
-    function attachImagePreviewEvents() {
-      const images = document.querySelectorAll(".preview-img");
-      images.forEach(img => {
-        img.addEventListener("click", (e) => {
-          photoSpinner.style.display = "block";
-          modalImg.src = e.target.src;
-          resetTransform();
-          modalImg.onload = () => { photoSpinner.style.display = "none"; };
-          photoModal.classList.add("show");
-        });
-      });
-    }
-    window.addEventListener("keydown", function(e) {
-      if(photoModal.classList.contains("show") && e.ctrlKey){
-        if(e.key === '+' || e.key === '='){
-          currentScale += 0.1;
-          modalImg.style.transform = `translate(${translateX}px, ${translateY}px) scale(${currentScale})`;
-          e.preventDefault();
-        } else if(e.key === '-'){
-          currentScale = Math.max(1, currentScale - 0.1);
-          modalImg.style.transform = `translate(${translateX}px, ${translateY}px) scale(${currentScale})`;
-          e.preventDefault();
-        }
-      }
-    });
-    modalImg.addEventListener("mousedown", function(e) {
-      isDragging = true;
-      dragStartX = e.clientX - translateX;
-      dragStartY = e.clientY - translateY;
-    });
-    window.addEventListener("mousemove", function(e) {
-      if(isDragging) {
-        translateX = e.clientX - dragStartX;
-        translateY = e.clientY - dragStartY;
-        modalImg.style.transform = `translate(${translateX}px, ${translateY}px) scale(${currentScale})`;
-      }
-    });
-    window.addEventListener("mouseup", function(e) {
-      isDragging = false;
-    });
-    let initialDistance = null, initialScale = 1;
-    modalImg.addEventListener("touchstart", function(e) {
-      if(e.touches.length === 2){
-        initialDistance = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY);
-        initialScale = currentScale;
-      } else if(e.touches.length === 1){
-        isDragging = true;
-        dragStartX = e.touches[0].clientX - translateX;
-        dragStartY = e.touches[0].clientY - translateY;
-      }
-    });
-    modalImg.addEventListener("touchmove", function(e) {
-      if(e.touches.length === 2 && initialDistance){
-        let newDistance = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY);
-        currentScale = Math.max(1, initialScale * (newDistance / initialDistance));
-        modalImg.style.transform = `translate(${translateX}px, ${translateY}px) scale(${currentScale})`;
-        e.preventDefault();
-      } else if(e.touches.length === 1 && isDragging){
-        translateX = e.touches[0].clientX - dragStartX;
-        translateY = e.touches[0].clientY - dragStartY;
-        modalImg.style.transform = `translate(${translateX}px, ${translateY}px) scale(${currentScale})`;
-        e.preventDefault();
-      }
-    });
-    modalImg.addEventListener("touchend", function(e) {
-      if(e.touches.length < 2){ initialDistance = null; }
-      if(e.touches.length === 0){ isDragging = false; }
-    });
-    closePhotoModal.addEventListener("click", (e) => {
-      e.stopPropagation();
-      photoModal.classList.remove("show");
-    });
-    const debouncedLoadData = debounce((skip) => { loadData(skip); }, 300);
-    filterDate.addEventListener("change", () => { loadData(); });
-    filterOrderNo.addEventListener("input", () => { debouncedLoadData(true); });
-    filterSeedNo.addEventListener("input", () => { debouncedLoadData(true); });
-    window.addEventListener("load", () => { 
-      loadData(); 
-    });
-    
-    // Modify Modal: Order Search using Select2
-    modifyBtn.addEventListener("click", async () => {
-      modifyModal.classList.add("show");
-      showLoading();
-      // Fetch unique order numbers
-      const { data, error } = await supabaseClient.from('data_entries').select('order_no');
-      hideLoading();
-      if(error) { showToast("অর্ডার লোডে সমস্যা: " + error.message, "error"); return; }
-      const uniqueOrders = [...new Set(data.map(o => o.order_no))];
-      const options = uniqueOrders.map(order => ({ id: order, text: order }));
-      initOrderSearchSelect(options);
-    });
-    closeModifyModal.addEventListener("click", () => { modifyModal.classList.remove("show"); });
-    window.addEventListener("click", (e) => { if(e.target === modifyModal) { modifyModal.classList.remove("show"); } });
-    
-    // Modify Modal: Search Order Button Click
-    document.getElementById("searchOrderBtn").addEventListener("click", async () => {
+    // Search Order Handler
+    async function searchOrderHandler() {
       const selectedOrder = $(orderSearchSelect).val();
       if(!selectedOrder) {
         showToast("অনুগ্রহ করে অর্ডার নির্বাচন করুন", "error");
@@ -1058,8 +1326,8 @@
         resultsDiv.innerHTML = "<p>কোনও ডেটা পাওয়া যায়নি</p>";
         return;
       }
-      let html = '<div style="overflow:auto;"><table style="width:100%; border-collapse:collapse;">';
-      html += '<thead><tr style="background:#fda085; color:#fff;">';
+      let html = '<div style="overflow:auto;"><table style="width:100%; border-collapse:collapse; border:1px solid #eee;">';
+      html += '<thead><tr style="background:#2c3e50; color:#fff;">';
       html += '<th>তারিখ</th><th>অর্ডার নং</th><th>পার্টি নাম</th><th>সেড নং</th><th>কালার নাম</th><th>কাউন্ট &amp; QTY</th><th>রেমার্কস</th><th>ফটো</th><th>অ্যাকশন</th>';
       html += '</tr></thead><tbody>';
       data.forEach(entry => {
@@ -1079,36 +1347,124 @@
           <td>${countDisplay}</td>
           <td>${entry.remarks || '-'}</td>
           <td>${ entry.photo_url ? `<img src="${entry.photo_url}" width="50" alt="ফটো" class="preview-img">` : '-' }</td>
-          <td style="text-align:center; cursor:pointer;" onclick="openNestedActionModal(${entry.id})">☰</td>
+          <td style="text-align:center;">
+            <div style="display:flex; gap:10px; justify-content:center;">
+              <button onclick="editEntry(${entry.id})" style="background:#3498db; padding:5px 10px; border-radius:4px;">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button onclick="deleteEntry(${entry.id})" style="background:#e74c3c; padding:5px 10px; border-radius:4px;">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </td>
         </tr>`;
       });
       html += '</tbody></table></div>';
       resultsDiv.innerHTML = html;
       attachImagePreviewEvents();
-    });
-    
-    let currentActionId = null;
-    function openNestedActionModal(id) {
-      currentActionId = id;
-      document.getElementById("actionModal").classList.add("show");
     }
-    document.getElementById("closeActionModal").addEventListener("click", () => {
-      document.getElementById("actionModal").classList.remove("show");
-    });
-    document.getElementById("actionEditBtn").addEventListener("click", () => {
-      document.getElementById("actionModal").classList.remove("show");
-      modifyModal.classList.remove("show");
-      editEntry(currentActionId);
-    });
-    document.getElementById("actionDeleteBtn").addEventListener("click", () => {
-      document.getElementById("actionModal").classList.remove("show");
-      modifyModal.classList.remove("show");
-      deleteEntry(currentActionId);
-    });
     
-    document.getElementById("cameraBtn").addEventListener("click", () => {
-      document.getElementById("photoCamera").click();
-    });
+    // Load Data Function
+    async function loadData() {
+      showLoading();
+      let query = supabaseClient.from('data_entries').select('*').order('id', { ascending: false });
+      
+      if (filterDate.value) query = query.eq('date', filterDate.value);
+      if (filterOrderNo.value) query = query.ilike('order_no', `%${filterOrderNo.value}%`);
+      if (filterSeedNo.value) query = query.ilike('seed_no', `%${filterSeedNo.value}%`);
+      if (filterPartyName.value) query = query.ilike('party_name', `%${filterPartyName.value}%`);
+      if (filterColor.value) query = query.ilike('color_name', `%${filterColor.value}%`);
+      
+      const { data, error } = await query;
+      hideLoading();
+      
+      if (error) { 
+        showToast("ডেটা লোডে সমস্যা: " + error.message, "error"); 
+        return; 
+      }
+      
+      const tbody = document.getElementById("dataTable").querySelector("tbody");
+      tbody.innerHTML = "";
+      
+      if (!data || data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding:30px;">কোনও ডেটা পাওয়া যায়নি</td></tr>`;
+        document.getElementById("overallSubtotal").innerText = "0";
+        document.getElementById("totalEntries").innerText = "0";
+        document.getElementById("totalQty").innerText = "0";
+        document.getElementById("lastUpdate").innerText = "-";
+        return;
+      }
+      
+      let overallTotal = 0;
+      data.forEach(entry => {
+        let formattedDate = formatDate(entry.date);
+        let countDisplay = "-";
+        let rowTotal = 0;
+        
+        if(entry.counts_data && Array.isArray(entry.counts_data) && entry.counts_data.length > 0) {
+          const lines = entry.counts_data.map(cd => `${cd.count || '-'} = ${cd.qty || '0'}`);
+          rowTotal = entry.counts_data.reduce((sum, cd) => sum + Number(cd.qty || 0), 0);
+          overallTotal += rowTotal;
+          countDisplay = lines.join("<br>") + "<br>____________<br>টোটাল = " + rowTotal;
+        }
+        
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${formattedDate}</td>
+          <td>${entry.order_no || '-'}</td>
+          <td>${entry.party_name || '-'}</td>
+          <td>${entry.seed_no || '-'}</td>
+          <td>${entry.color_name || '-'}</td>
+          <td>${countDisplay}</td>
+          <td>${entry.remarks || '-'}</td>
+          <td>${ entry.photo_url ? `<img src="${entry.photo_url}" width="50" alt="ফটো" class="preview-img">` : '-' }</td>
+          <td style="text-align:center;">
+            <div style="display:flex; gap:10px; justify-content:center;">
+              <button onclick="editEntry(${entry.id})" style="background:#3498db; padding:5px 10px; border-radius:4px;">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button onclick="deleteEntry(${entry.id})" style="background:#e74c3c; padding:5px 10px; border-radius:4px;">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+      
+      document.getElementById("overallSubtotal").innerText = overallTotal;
+      document.getElementById("totalEntries").innerText = data.length;
+      document.getElementById("totalQty").innerText = overallTotal;
+      document.getElementById("lastUpdate").innerText = new Date().toLocaleString();
+      
+      attachImagePreviewEvents();
+    }
+    
+    function attachImagePreviewEvents() {
+      const images = document.querySelectorAll(".preview-img");
+      images.forEach(img => {
+        img.addEventListener("click", (e) => {
+          photoSpinner.style.display = "block";
+          modalImg.src = e.target.src;
+          resetTransform();
+          modalImg.onload = () => { photoSpinner.style.display = "none"; };
+          photoModal.classList.add("show");
+        });
+      });
+    }
+    
+    let currentScale = 1, translateX = 0, translateY = 0;
+    let isDragging = false, dragStartX = 0, dragStartY = 0;
+    function resetTransform() {
+      currentScale = 1;
+      translateX = 0;
+      translateY = 0;
+      modalImg.style.transform = "translate(0px, 0px) scale(1)";
+    }
+    
+    // Make functions global for HTML onclick attributes
+    window.editEntry = editEntry;
+    window.deleteEntry = deleteEntry;
   </script>
 </body>
 </html>
